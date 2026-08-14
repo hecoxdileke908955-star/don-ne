@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react';
 
 export default function AdminLoginPage() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ export default function AdminLoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -67,6 +68,28 @@ export default function AdminLoginPage() {
           className="mt-8 space-y-4"
           onSubmit={handleSubmit}
         >
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-semibold"
+            >
+              Email
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              autoComplete="username"
+              required
+              maxLength={254}
+              value={email}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
+              className="h-12 w-full rounded-ctrl border border-gray-300 px-3 outline-none focus:border-primary"
+            />
+          </div>
+
           <div>
             <label
               htmlFor="password"

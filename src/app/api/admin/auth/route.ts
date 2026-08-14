@@ -1,47 +1,36 @@
-import { timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import {
   ADMIN_SESSION_COOKIE,
   createAdminSessionToken,
 } from '@/lib/admin-session';
+import { hashAdminPassword, isValidAdminPassword, verifyAdminPassword } from '@/lib/admin-password';
+import { prisma } from '@/lib/db';
 import { enforceRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-function safeEqualText(actual: string, expected: string): boolean {
-  const actualBuffer = Buffer.from(actual, 'utf8');
-  const expectedBuffer = Buffer.from(expected, 'utf8');
+const DUMMY_PASSWORD_HASH = '$argon2id$v=19$m=19456,p=1,t=2$PDjN2bQlrdejF2aOUKseAQ$uqpyEVwvjqrVwyjDn6LRIMZafgkJwHprUQ7WjJd9DUA';
 
-  if (actualBuffer.length !== expectedBuffer.length) {
-    return false;
-  }
-
-  return timingSafeEqual(actualBuffer, expectedBuffer);
+function invalidCredentials() {
+  return NextResponse.json(
+    { error: 'Email or password is incorrect' },
+    { status: 401 }
+  );
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    const email = typeof body?.email === 'string'
+      ? body.email.trim().toLowerCase()
+      : '';
+    const password = body?.password;
 
     if (
-      typeof body?.password !== 'string' ||
-      body.password.length < 1 ||
-      body.password.length > 256
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      || !isValidAdminPassword(password)
     ) {
-      return NextResponse.json(
-        { error: 'Mật khẩu không hợp lệ' },
-        { status: 400 }
-      );
-    }
-
-    const bootstrapPassword =
-      process.env.ADMIN_BOOTSTRAP_PASSWORD;
-
-    if (!bootstrapPassword || bootstrapPassword.includes('CHANGE_ME')) {
-      return NextResponse.json(
-        { error: 'Server authentication is not configured' },
-        { status: 500 }
-      );
+      return invalidCredentials();
     }
 
     const rateLimit = await enforceRateLimit(request, 'auth');
@@ -61,35 +50,35 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!safeEqualText(body.password, bootstrapPassword)) {
-      await new Promise((resolve) =>
-        setTimeout(resolve, 400)
-      );
-
-      return NextResponse.json(
-        { error: 'Mật khẩu quản trị không chính xác' },
-        { status: 401 }
-      );
-    }
-
-    const user = {
-      userId: 'bootstrap-super-admin',
-      email: 'admin@donne.vn',
-      fullName: 'Chủ Quản Dọn Nè',
-      role: 'SUPER_ADMIN' as const,
-    };
-
-    const token =
-      await createAdminSessionToken(user);
-
-    const response = NextResponse.json({
-      success: true,
-      user: {
-        email: user.email,
-        fullName: user.fullName,
-        role: user.role,
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        isActive: true,
+        passwordHash: true,
       },
     });
+
+    // Absent accounts still verify a fixed Argon2id hash to avoid a cheap
+    // account-existence timing shortcut on the common invalid-login path.
+    const passwordResult = await verifyAdminPassword(
+      user?.passwordHash ?? DUMMY_PASSWORD_HASH,
+      password
+    );
+
+    if (!user || !user.isActive || !passwordResult.valid) {
+      return invalidCredentials();
+    }
+
+    if (passwordResult.needsRehash) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash: await hashAdminPassword(password) },
+      });
+    }
+
+    const token = await createAdminSessionToken({ userId: user.id });
+    const response = NextResponse.json({ success: true });
 
     response.cookies.set({
       name: ADMIN_SESSION_COOKIE,
@@ -100,19 +89,14 @@ export async function POST(request: Request) {
       path: '/',
       maxAge: 60 * 60 * 8,
     });
-
-    response.headers.set(
-      'Cache-Control',
-      'no-store'
-    );
+    response.headers.set('Cache-Control', 'no-store');
 
     return response;
   } catch {
     console.error('Admin authentication failed: unexpected server error');
-
     return NextResponse.json(
-      { error: 'Không thể đăng nhập' },
-      { status: 500 }
+      { error: 'Authentication temporarily unavailable' },
+      { status: 503 }
     );
   }
 }

@@ -31,9 +31,21 @@ cp .env.example .env
 Mở file `.env` và cập nhật chuỗi kết nối PostgreSQL:
 ```env
 DATABASE_URL="postgresql://postgres:CHANGE_ME_PASSWORD@localhost:5432/don_ne_db?schema=public"
-ADMIN_BOOTSTRAP_PASSWORD="CHANGE_ME"
 JWT_SECRET="CHANGE_ME_WITH_A_RANDOM_SECRET_OF_AT_LEAST_32_CHARACTERS"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### One-time initial Admin provisioning
+After migrations and seed complete, provision the first `SUPER_ADMIN` with
+temporary process environment values only. Do not add these values to `.env`
+or deployment runtime configuration:
+
+```powershell
+$env:ADMIN_INITIAL_EMAIL="admin@example.com"
+$env:ADMIN_INITIAL_PASSWORD="CHOOSE_A_UNIQUE_PASSWORD"
+$env:ADMIN_INITIAL_NAME="Initial Administrator"
+node scripts/provision-super-admin.cjs
+Remove-Item Env:ADMIN_INITIAL_EMAIL,Env:ADMIN_INITIAL_PASSWORD,Env:ADMIN_INITIAL_NAME
 ```
 
 ### Bước 3: Khởi động Cơ sở dữ liệu PostgreSQL (Tùy chọn qua Docker)

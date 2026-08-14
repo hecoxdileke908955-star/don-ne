@@ -79,6 +79,8 @@ export async function proxy(request: NextRequest) {
   const session =
     await verifyAdminSessionToken(token);
 
+  // Proxy performs only signed-session structural screening. Protected API
+  // handlers and the Admin layout resolve the current User from PostgreSQL.
   if (!session) {
     // API admin trả 401, không redirect HTML.
     if (pathname.startsWith('/api/admin/')) {
