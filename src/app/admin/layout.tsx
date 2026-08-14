@@ -4,11 +4,12 @@ import { AdminSidebar } from '@/components/AdminSidebar';
 import { requireAdminSession } from '@/lib/admin-authorization';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  if (!await requireAdminSession()) redirect('/admin-login');
+  const session = await requireAdminSession();
+  if (!session) redirect('/admin-login');
 
   return (
     <div className="flex min-h-screen bg-surface-secondary">
-      <AdminSidebar />
+      <AdminSidebar role={session.role} />
       <div className="flex-1 overflow-x-hidden">{children}</div>
     </div>
   );

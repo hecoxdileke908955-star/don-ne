@@ -1,6 +1,21 @@
 import { cookies } from 'next/headers';
+import { UserRole } from '@prisma/client';
 import { verifyAdminSessionToken } from '@/lib/admin-session';
 import { prisma } from '@/lib/db';
+import { verifyPermission } from '@/lib/auth';
+
+export type AdminAuthorization =
+  | { status: 'unauthenticated' }
+  | { status: 'forbidden' }
+  | {
+    status: 'authorized';
+    user: {
+      userId: string;
+      email: string;
+      fullName: string;
+      role: UserRole;
+    };
+  };
 
 export async function requireAdminSession() {
   const token = (await cookies()).get('don_ne_admin_session')?.value;
@@ -31,4 +46,15 @@ export async function requireAdminSession() {
   } catch {
     return null;
   }
+}
+
+export async function requireAdminRole(
+  requiredRole: UserRole
+): Promise<AdminAuthorization> {
+  const user = await requireAdminSession();
+
+  if (!user) return { status: 'unauthenticated' };
+  if (!verifyPermission(user.role, requiredRole)) return { status: 'forbidden' };
+
+  return { status: 'authorized', user };
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { requireAdminSession } from '@/lib/admin-authorization';
+import { requireAdminRole } from '@/lib/admin-authorization';
 import { siteConfigSchema } from '@/lib/site-config-schema';
 import { requireSameOriginMutation } from '@/lib/admin-csrf';
 
@@ -12,7 +12,9 @@ async function readSettings() {
 }
 
 export async function GET() {
-  if (!await requireAdminSession()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authorization = await requireAdminRole('ADMIN');
+  if (authorization.status === 'unauthenticated') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (authorization.status === 'forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   try {
     const settings = await readSettings();
     if (!settings) return NextResponse.json({ error: 'Settings temporarily unavailable' }, { status: 503 });
@@ -23,7 +25,9 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  if (!await requireAdminSession()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authorization = await requireAdminRole('ADMIN');
+  if (authorization.status === 'unauthenticated') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (authorization.status === 'forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   if (!requireSameOriginMutation(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const parsed = siteConfigSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'Invalid settings data' }, { status: 400 });

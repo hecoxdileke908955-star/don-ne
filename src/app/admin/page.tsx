@@ -1,7 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
+import { requireAdminSession } from '@/lib/admin-authorization';
+import { verifyPermission } from '@/lib/auth';
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const session = await requireAdminSession();
+  const canViewLeads = session && verifyPermission(session.role, 'ADMIN');
+
   return (
     <div className="p-6 md:p-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
@@ -9,14 +14,14 @@ export default function AdminDashboardPage() {
           <h1 className="text-2xl font-bold text-text-main">Trung Tâm Vận Hành & Attribution</h1>
           <p className="text-xs text-text-muted">Nguồn Traffic → Landing Page → Lead Tiếp Nhận → Doanh Thu Đơn Hàng</p>
         </div>
-        <div className="flex gap-2">
+        {canViewLeads && <div className="flex gap-2">
           <Link
             href="/admin/leads"
             className="rounded-ctrl bg-primary px-4 py-2 text-xs font-bold text-white shadow hover:bg-primary-hover"
           >
             Xem Danh Sách Lead
           </Link>
-        </div>
+        </div>}
       </div>
 
       {/* KPI Cards */}
