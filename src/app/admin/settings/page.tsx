@@ -1,20 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-type Settings = {
-  brandName: string;
-  slogan: string;
-  hotlines: string[];
-  zaloNumbers: string[];
-  emails: string[];
-  mainAddress: string;
-  branchAddresses: string[];
-  businessCode: string;
-  workingHours: string;
-  footerCommitment: string;
-  socials: { facebook?: string; tiktok?: string };
-};
+import type { SiteConfig as Settings } from '@/lib/site-config-schema';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -90,7 +77,7 @@ export default function AdminSettingsPage() {
   if (!settings) return <main className="space-y-3 p-6"><p role="alert">{error || 'Không thể tải cài đặt.'}</p><button className="rounded border px-3 py-2" onClick={() => void load()}>Thử lại</button></main>;
 
   return <main className="max-w-4xl space-y-5 p-6">
-    <div><h1 className="text-2xl font-bold">Cài đặt chung</h1><p className="text-sm text-text-muted">Các giá trị này được lưu trong PostgreSQL. Việc dùng trên website công khai sẽ được triển khai ở giai đoạn sau.</p></div>
+    <div><h1 className="text-2xl font-bold">Cài đặt chung</h1><p className="text-sm text-text-muted">Các giá trị này được lưu trong PostgreSQL và dùng cho website công khai.</p></div>
     {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
     {success && <p role="status" className="text-sm text-primary">{success}</p>}
     <section className="grid gap-4 rounded-card border bg-white p-5 sm:grid-cols-2">

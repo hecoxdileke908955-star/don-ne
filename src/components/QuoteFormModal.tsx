@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { parseAttributionClient, trackClientEvent } from '@/lib/traffic-tracker';
+import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 interface QuoteFormModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const QuoteFormModal: React.FC<QuoteFormModalProps> = ({
   defaultServiceSlug = 've-sinh-nha-cua',
 }) => {
   const router = useRouter();
+  const hotline = useSiteConfig()?.hotlines[0];
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
   const [serviceSlug, setServiceSlug] = useState(defaultServiceSlug);
@@ -104,7 +106,7 @@ export const QuoteFormModal: React.FC<QuoteFormModalProps> = ({
     } catch (err) {
       console.error(err);
       setIsSubmitting(false);
-      alert('Có lỗi xảy ra khi gửi yêu cầu. Vui lòng liên hệ Hotline 0964.182.330!');
+      alert(hotline ? `Có lỗi xảy ra khi gửi yêu cầu. Vui lòng liên hệ Hotline ${hotline}!` : 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau.');
     }
   };
 

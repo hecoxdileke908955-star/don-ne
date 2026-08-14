@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Be_Vietnam_Pro } from 'next/font/google';
+import { SiteConfigProvider } from '@/components/SiteConfigProvider';
+import { getPublicSiteConfig } from '@/lib/site-config-data';
 import './globals.css';
 
 const beVietnamPro = Be_Vietnam_Pro({
@@ -7,30 +9,33 @@ const beVietnamPro = Be_Vietnam_Pro({
   weight: ['400', '500', '600', '700', '800', '900'],
 });
 
-export const metadata: Metadata = {
-  title: 'Dọn Nè — Dịch Vụ Vệ Sinh Công Nghiệp & Nhà Cửa Chuyên Nghiệp Hà Nội',
-  description: 'Dịch vụ tổng vệ sinh nhà cửa, căn hộ chung cư, văn phòng, sau xây dựng và giặt đệm sofa tại Hà Nội. Giá minh bạch, nghiệm thu hài lòng mới thanh toán.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
-  },
-  openGraph: {
-    title: 'Dọn Nè — Vệ Sinh Nhà Cửa & Công Nghiệp Hà Nội',
-    description: 'Chuyên nghiệp, minh bạch, nghiệm thu 100% hài lòng mới nhận thanh toán. Hotline 0964.182.330.',
-    images: ['/logo-web.png'],
-  }
-};
+export const dynamic = 'force-dynamic';
 
-export default function RootLayout({
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getPublicSiteConfig();
+  const brandName = config?.brandName ?? 'Thông tin thương hiệu';
+  const description = config?.slogan ?? 'Thông tin website tạm thời chưa khả dụng.';
+
+  return {
+    title: `${brandName} — Dịch Vụ Vệ Sinh Chuyên Nghiệp Hà Nội`,
+    description,
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+    icons: { icon: '/favicon.png', apple: '/favicon.png' },
+    openGraph: { title: brandName, description, images: ['/logo-web.png'] },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const config = await getPublicSiteConfig();
+
   return (
     <html lang="vi">
       <body className={`${beVietnamPro.className} bg-surface font-sans text-text-main antialiased selection:bg-primary-soft selection:text-primary`}>
-        {children}
+        <SiteConfigProvider config={config}>{children}</SiteConfigProvider>
       </body>
     </html>
   );
