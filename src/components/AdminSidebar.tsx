@@ -35,13 +35,6 @@ export const AdminSidebar: React.FC = () => {
           </Link>
 
           <Link
-            href="/admin/editor/home"
-            className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary"
-          >
-            Visual Page Editor
-          </Link>
-
-          <Link
             href="/admin/services"
             className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary"
           >
