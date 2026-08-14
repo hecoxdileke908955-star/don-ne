@@ -1,0 +1,306 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  WON
+  LOST
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DeviceType {
+  MOBILE
+  DESKTOP
+  TABLET
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String
+  fullName     String
+  role         UserRole     @default(EDITOR)
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  auditLogs    AuditLog[]
+  pageVersions PageVersion[]
+}
+
+model GlobalSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Media {
+  id           String    @id @default(uuid())
+  fileName     String
+  url          String
+  thumbnailUrl String?
+  fileSize     Int
+  mimeType     String
+  width        Int?
+  height       Int?
+  altText      String?
+  caption      String?
+  folder       String    @default("general")
+  createdAt    DateTime  @default(now())
+  
+  servicesCover     Service[]  @relation("CoverMedia")
+  servicesThumb     Service[]  @relation("ThumbMedia")
+  articlesCover     Article[]  @relation("ArticleCover")
+  caseStudiesCover  CaseStudy[] @relation("CaseStudyCover")
+}
+
+model ServiceCategory {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  name        String
+  description String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  services    Service[]
+  createdAt   DateTime  @default(now())
+}
+
+model Service {
+  id               String          @id @default(uuid())
+  categoryId       String
+  category         ServiceCategory @relation(fields: [categoryId], references: [id])
+  slug             String          @unique
+  title            String
+  shortDescription String?
+  badge            String?
+  
+  thumbnailMediaId String?
+  thumbnailMedia   Media?          @relation("ThumbMedia", fields: [thumbnailMediaId], references: [id])
+  coverMediaId     String?
+  coverMedia       Media?          @relation("CoverMedia", fields: [coverMediaId], references: [id])
+  
+  whenNeeded       Json?
+  includedItems    Json?
+  excludedItems    Json?
+  processSteps     Json?
+  commitments      Json?
+  importantNotes   Json?
+  
+  status           PublishStatus   @default(PUBLISHED)
+  sortOrder        Int             @default(0)
+  seoTitle         String?
+  seoDescription   String?
+  
+  priceItems       PriceItem[]
+  articles         Article[]
+  leads            Lead[]
+  faqs             FAQ[]
+  
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
+
+model PriceItem {
+  id            String        @id @default(uuid())
+  serviceId     String
+  service       Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  itemName      String
+  unit          String
+  minPrice      Decimal       @db.Decimal(12, 2)
+  maxPrice      Decimal?      @db.Decimal(12, 2)
+  conditionText String?
+  note          String?
+  sortOrder     Int           @default(0)
+  status        PublishStatus @default(PUBLISHED)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  isGlobal  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Page {
+  id             String        @id @default(uuid())
+  slug           String        @unique
+  title          String
+  status         PublishStatus @default(DRAFT)
+  seoTitle       String?
+  seoDescription String?
+  ogImageUrl     String?
+  
+  sections       PageSection[]
+  versions       PageVersion[]
+  
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model PageSection {
+  id        String   @id @default(uuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  type      String
+  variant   String   @default("default")
+  sortOrder Int      @default(0)
+  visible   Boolean  @default(true)
+  props     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PageVersion {
+  id             String    @id @default(uuid())
+  pageId         String
+  page           Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  versionNumber  Int
+  sectionsJson   Json
+  isPublished    Boolean   @default(false)
+  publishedById  String?
+  publishedBy    User?     @relation(fields: [publishedById], references: [id])
+  createdAt      DateTime  @default(now())
+}
+
+model Article {
+  id              String        @id @default(uuid())
+  slug            String        @unique
+  title           String
+  excerpt         String?
+  contentMarkdown String
+  coverMediaId    String?
+  coverMedia      Media?        @relation("ArticleCover", fields: [coverMediaId], references: [id])
+  category        String
+  tags            String[]
+  relatedServiceId String?
+  relatedService  Service?      @relation(fields: [relatedServiceId], references: [id])
+  status          PublishStatus @default(PUBLISHED)
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Location {
+  id                 String   @id @default(uuid())
+  slug               String   @unique
+  districtName       String
+  city               String   @default("Hà Nội")
+  featuredText       String?
+  serviceHubAddress  String?
+  hotline            String?
+  sortOrder          Int      @default(0)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+}
+
+model CaseStudy {
+  id             String        @id @default(uuid())
+  slug           String        @unique
+  title          String
+  customerType   String
+  district       String
+  beforeImageUrl String?
+  afterImageUrl  String?
+  coverMediaId   String?
+  coverMedia     Media?        @relation("CaseStudyCover", fields: [coverMediaId], references: [id])
+  summary        String
+  details        String
+  status         PublishStatus @default(PUBLISHED)
+  createdAt      DateTime      @default(now())
+}
+
+model TrafficSession {
+  id          String         @id @default(uuid())
+  sessionId   String         @unique
+  landingPage String
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  deviceType  DeviceType     @default(MOBILE)
+  ipHash      String?
+  firstSeenAt DateTime       @default(now())
+  events      TrafficEvent[]
+  leads       Lead[]
+}
+
+model TrafficEvent {
+  id        BigInt         @id @default(autoincrement())
+  sessionId String
+  session   TrafficSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  eventName String
+  pageUrl   String
+  meta      Json?
+  createdAt DateTime       @default(now())
+}
+
+model Lead {
+  id              String         @id @default(uuid())
+  leadCode        String         @unique
+  customerName    String
+  phone           String
+  serviceId       String?
+  service         Service?       @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceName     String?
+  district        String?
+  addressDetail   String?
+  estimatedArea   String?
+  scheduledTime   String?
+  imageUrls       Json?
+  customerNote    String?
+  internalNote    String?
+  status          LeadStatus     @default(NEW)
+  quotedPrice     Decimal?       @db.Decimal(12, 2)
+  finalOrderValue Decimal?       @db.Decimal(12, 2)
+  sessionId       String?
+  session         TrafficSession? @relation(fields: [sessionId], references: [sessionId], onDelete: SetNull)
+  utmSource       String?
+  landingPage     String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Redirect {
+  id        String   @id @default(uuid())
+  oldPath   String   @unique
+  newPath   String
+  httpCode  Int      @default(301)
+  hits      Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id         BigInt   @id @default(autoincrement())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userEmail  String?
+  action     String
+  entityType String
+  entityId   String?
+  payload    Json?
+  createdAt  DateTime @default(now())
+}

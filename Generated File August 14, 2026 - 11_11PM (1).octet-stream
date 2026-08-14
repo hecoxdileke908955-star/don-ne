@@ -1,0 +1,108 @@
+'use client';
+
+import React, { useState } from 'react';
+import { formatVND } from '@/lib/pricing-engine';
+
+interface LeadItem {
+  id: string;
+  code: string;
+  name: string;
+  phone: string;
+  service: string;
+  district: string;
+  utmSource: string;
+  landingPage: string;
+  status: 'NEW' | 'CONTACTED' | 'QUOTED' | 'WON' | 'LOST';
+  quotedPrice?: number;
+  finalOrderValue?: number;
+}
+
+const SAMPLE_LEADS: LeadItem[] = [
+  { id: '1', code: 'DN-89211', name: 'Nguyễn Văn Hải', phone: '0988 234 112', service: 'Vệ sinh căn hộ chung cư', district: 'Cầu Giấy', utmSource: 'google-search', landingPage: '/ve-sinh-can-ho-chung-cu', status: 'WON', quotedPrice: 1200000, finalOrderValue: 1200000 },
+  { id: '2', code: 'DN-89212', name: 'Công ty Alpha Tech', phone: '0912 456 789', service: 'Giặt thảm văn phòng', district: 'Đống Đa', utmSource: 'zalo-share', landingPage: '/giat-tham-van-phong', status: 'QUOTED', quotedPrice: 3500000 },
+  { id: '3', code: 'DN-89213', name: 'Chị Mai Linh', phone: '0973 111 222', service: 'Vệ sinh sau xây dựng', district: 'Long Biên', utmSource: 'facebook-ads', landingPage: '/ve-sinh-sau-xay-dung', status: 'NEW' },
+];
+
+export default function AdminLeadsPage() {
+  const [leads, setLeads] = useState<LeadItem[]>(SAMPLE_LEADS);
+  const [filter, setFilter] = useState('ALL');
+
+  const filtered = leads.filter((l) => filter === 'ALL' || l.status === filter);
+
+  return (
+    <div className="p-6 md:p-8 space-y-6">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+        <div>
+          <h1 className="text-2xl font-bold text-text-main">Quản Lý Lead & Đơn Hàng CRM</h1>
+          <p className="text-xs text-text-muted">Theo dõi từ nguồn traffic, landing page tới giá trị đơn hàng thực tế</p>
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        {['ALL', 'NEW', 'CONTACTED', 'QUOTED', 'WON', 'LOST'].map((st) => (
+          <button
+            key={st}
+            onClick={() => setFilter(st)}
+            className={`rounded-ctrl px-3 py-1.5 text-xs font-semibold ${
+              filter === st ? 'bg-primary text-white' : 'bg-white border border-gray-200 text-text-muted'
+            }`}
+          >
+            {st}
+          </button>
+        ))}
+      </div>
+
+      <div className="overflow-hidden rounded-card border border-gray-200 bg-white shadow-sm">
+        <table className="w-full text-left text-xs text-text-main">
+          <thead className="border-b border-gray-200 bg-surface-secondary text-[11px] font-bold uppercase text-text-muted">
+            <tr>
+              <th className="px-4 py-3">Mã Lead</th>
+              <th className="px-4 py-3">Khách Hàng / SĐT</th>
+              <th className="px-4 py-3">Dịch Vụ & Quận</th>
+              <th className="px-4 py-3">Nguồn Traffic</th>
+              <th className="px-4 py-3">Giá Báo / Đơn Chốt</th>
+              <th className="px-4 py-3">Trạng Thái</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {filtered.map((l) => (
+              <tr key={l.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3 font-mono font-bold">{l.code}</td>
+                <td className="px-4 py-3">
+                  <div className="font-bold">{l.name}</div>
+                  <div className="text-primary">{l.phone}</div>
+                </td>
+                <td className="px-4 py-3">
+                  <div>{l.service}</div>
+                  <div className="text-text-muted text-[11px]">{l.district}</div>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="rounded bg-gray-100 px-2 py-0.5 font-mono text-[10px]">{l.utmSource}</span>
+                  <div className="text-[10px] text-text-muted truncate max-w-[120px]">{l.landingPage}</div>
+                </td>
+                <td className="px-4 py-3">
+                  {l.finalOrderValue ? (
+                    <span className="font-bold text-primary">{formatVND(l.finalOrderValue)}</span>
+                  ) : l.quotedPrice ? (
+                    <span>Báo: {formatVND(l.quotedPrice)}</span>
+                  ) : (
+                    <span className="text-text-muted italic">Chưa báo</span>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+                    l.status === 'WON' ? 'bg-green-100 text-green-800' :
+                    l.status === 'QUOTED' ? 'bg-amber-100 text-amber-800' :
+                    l.status === 'NEW' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {l.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

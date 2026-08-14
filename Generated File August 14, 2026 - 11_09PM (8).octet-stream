@@ -1,0 +1,34 @@
+import React from 'react';
+import Link from 'next/link';
+
+const DISTRICTS = [
+  'Cầu Giấy', 'Đống Đa', 'Long Biên', 'Hà Đông',
+  'Nam Từ Liêm', 'Bắc Từ Liêm', 'Thanh Xuân', 'Ba Đình',
+  'Tây Hồ', 'Hoàng Mai', 'Hai Bà Trưng', 'Gia Lâm'
+];
+
+export const ServiceAreasSection: React.FC<{ props: any }> = ({ props }) => {
+  return (
+    <section className="py-16 bg-surface-secondary border-t border-gray-100">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 text-center">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-text-main mb-2">
+          {props.heading || 'Phủ Sóng 12 Quận Huyện Hà Nội'}
+        </h2>
+        <p className="text-xs sm:text-sm text-text-muted max-w-2xl mx-auto mb-8">
+          {props.subheading || 'Đội ngũ túc trực tại các trạm cơ sở, có mặt sau 15-30 phút khi có lịch hẹn'}
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          {DISTRICTS.map((dist, idx) => (
+            <div
+              key={idx}
+              className="rounded-ctrl border border-gray-200 bg-white p-3 text-xs font-semibold text-text-main shadow-sm hover:border-primary transition"
+            >
+              📍 {dist}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};

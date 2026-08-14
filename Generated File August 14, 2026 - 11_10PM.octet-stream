@@ -1,0 +1,24 @@
+import React from 'react';
+import { BeforeAfterSlider } from '../BeforeAfterSlider';
+
+interface BeforeAfterProps {
+  props: any;
+}
+
+export const BeforeAfterSection: React.FC<BeforeAfterProps> = ({ props }) => {
+  return (
+    <section className="py-16 bg-surface">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-text-main">
+            {props.heading || 'Hình Ảnh Thực Tế Thi Công'}
+          </h2>
+          <p className="mt-2 text-xs sm:text-sm text-text-muted">
+            {props.subheading || 'Kết quả làm sạch rõ rệt trước và sau khi đội ngũ Dọn Nè xử lý'}
+          </p>
+        </div>
+        <BeforeAfterSlider />
+      </div>
+    </section>
+  );
+};
