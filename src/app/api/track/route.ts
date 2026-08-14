@@ -1,48 +1,60 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 
-export async function POST(request: Request) {
+const MAX_REQUEST_BYTES = 8_192;
+const trackPayloadSchema = z.object({
+  sessionId: z.string().trim().min(4).max(200).regex(/^[A-Za-z0-9_-]+$/),
+  eventName: z.enum(['phone_click', 'zalo_click', 'quote_form_submit']),
+  pageUrl: z.string().trim().startsWith('/').max(500).default('/'),
+  meta: z.object({
+    device: z.enum(['MOBILE', 'DESKTOP', 'TABLET']).optional(),
+    utmSource: z.string().trim().max(200).optional(),
+    hotline: z.string().trim().max(30).optional(),
+    zalo: z.string().trim().max(30).optional(),
+    location: z.string().trim().max(100).optional(),
+    service: z.string().trim().max(120).optional(),
+    district: z.string().trim().max(120).optional(),
+  }).strict().default({}),
+}).strict();
+
+async function parsePayload(request: Request) {
+  const contentLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) return null;
+
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).length > MAX_REQUEST_BYTES) return null;
+
   try {
-    const body = await request.json();
-    const { sessionId, eventName, pageUrl, meta } = body;
+    return trackPayloadSchema.safeParse(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
 
-    if (!sessionId || !eventName) {
-      return NextResponse.json({ error: 'Invalid event data' }, { status: 400 });
-    }
+export async function POST(request: Request) {
+  const parsed = await parsePayload(request);
+  if (!parsed || !parsed.success) return NextResponse.json({ error: 'Invalid event data' }, { status: 400 });
 
-    // Try saving event to DB if available
-    try {
-      await prisma.trafficSession.upsert({
+  const { sessionId, eventName, pageUrl, meta } = parsed.data;
+  try {
+    await prisma.$transaction([
+      prisma.trafficSession.upsert({
         where: { sessionId },
         update: {},
         create: {
           sessionId,
-          landingPage: pageUrl || '/',
-          utmSource: meta?.utmSource || null,
-          deviceType: meta?.device === 'MOBILE' ? 'MOBILE' : meta?.device === 'TABLET' ? 'TABLET' : 'DESKTOP',
-        }
-      });
-
-      await prisma.trafficEvent.create({
-        data: {
-          sessionId,
-          eventName,
-          pageUrl: pageUrl || '/',
-          meta: meta || {}
-        }
-      });
-    } catch {
-      // Background tracking graceful fallback
-    }
-
+          landingPage: pageUrl,
+          utmSource: meta.utmSource ?? null,
+          deviceType: meta.device ?? 'DESKTOP',
+        },
+      }),
+      prisma.trafficEvent.create({
+        data: { sessionId, eventName, pageUrl, meta },
+      }),
+    ]);
     return NextResponse.json({ tracked: true });
-  } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : 'Internal server error';
-
-    return NextResponse.json(
-      { error: message },
-      { status: 500 }
-    );
+  } catch {
+    return NextResponse.json({ error: 'Tracking temporarily unavailable' }, { status: 503 });
   }
 }
