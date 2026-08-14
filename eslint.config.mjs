@@ -17,7 +17,7 @@ const eslintConfig = defineConfig([
     'next-env.d.ts',
   ]),
   {
-    files: ['scripts/verify-lead-e2e.cjs', 'scripts/verify-lead-admin-e2e.cjs', 'scripts/verify-pricing-admin-e2e.cjs', 'scripts/verify-pricing-db-down.cjs', 'scripts/verify-pricing-public-e2e.cjs', 'scripts/verify-services-admin-e2e.cjs', 'scripts/verify-services-public-e2e.cjs', 'scripts/verify-services-server-e2e.cjs', 'scripts/verify-services-browser-e2e.cjs', 'scripts/verify-settings-admin-e2e.cjs', 'scripts/verify-settings-public-e2e.cjs', 'scripts/verify-track-e2e.cjs', 'scripts/verify-rate-limit-e2e.cjs', 'scripts/verify-csrf-e2e.cjs', 'scripts/verify-security-headers-e2e.cjs', 'scripts/verify-error-hygiene-e2e.cjs', 'scripts/provision-super-admin.cjs', 'scripts/verify-db-auth-e2e.cjs', 'scripts/verify-rbac-e2e.cjs'],
+    files: ['scripts/verify-lead-e2e.cjs', 'scripts/verify-lead-admin-e2e.cjs', 'scripts/verify-pricing-admin-e2e.cjs', 'scripts/verify-pricing-db-down.cjs', 'scripts/verify-pricing-public-e2e.cjs', 'scripts/verify-services-admin-e2e.cjs', 'scripts/verify-services-public-e2e.cjs', 'scripts/verify-services-server-e2e.cjs', 'scripts/verify-services-browser-e2e.cjs', 'scripts/verify-settings-admin-e2e.cjs', 'scripts/verify-settings-public-e2e.cjs', 'scripts/verify-track-e2e.cjs', 'scripts/verify-rate-limit-e2e.cjs', 'scripts/verify-csrf-e2e.cjs', 'scripts/verify-security-headers-e2e.cjs', 'scripts/verify-error-hygiene-e2e.cjs', 'scripts/provision-super-admin.cjs', 'scripts/verify-db-auth-e2e.cjs', 'scripts/verify-rbac-e2e.cjs', 'scripts/verify-admin-users-e2e.cjs'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },

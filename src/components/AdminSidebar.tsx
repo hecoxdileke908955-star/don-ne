@@ -67,6 +67,15 @@ export const AdminSidebar: React.FC<{ role: UserRole }> = ({ role }) => {
           >
             Cấu hình toàn cục
           </Link>
+
+          {role === 'SUPER_ADMIN' && (
+            <Link
+              href="/admin/users"
+              className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary"
+            >
+              Quản trị viên
+            </Link>
+          )}
         </nav>
       </div>
 
