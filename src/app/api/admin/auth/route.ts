@@ -107,11 +107,8 @@ export async function POST(request: Request) {
     );
 
     return response;
-  } catch (error) {
-    console.error(
-      'Admin authentication failed:',
-      error instanceof Error ? error.message : error
-    );
+  } catch {
+    console.error('Admin authentication failed: unexpected server error');
 
     return NextResponse.json(
       { error: 'Không thể đăng nhập' },

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { requireAdminSession } from '@/lib/admin-authorization';
@@ -14,7 +15,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const lead = await prisma.lead.update({ where: { id: (await params).id }, data: parsed.data });
     return NextResponse.json({ lead });
-  } catch {
-    return NextResponse.json({ error: 'Lead not found or unavailable' }, { status: 404 });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ error: 'Leads temporarily unavailable' }, { status: 503 });
   }
 }
