@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #0F6B4F;
+  --primary-hover: #0A4F3A;
+  --soft-primary: #E8F1ED;
+  --accent: #C2600F;
+  --text-main: #111827;
+  --text-muted: #5B6672;
+}
+
+body {
+  color: var(--text-main);
+  background-color: #ffffff;
+}

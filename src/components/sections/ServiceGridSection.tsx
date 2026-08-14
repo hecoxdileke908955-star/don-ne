@@ -1,0 +1,68 @@
+import React from 'react';
+import Link from 'next/link';
+import type { SectionContentProps } from '@/lib/section-schema';
+
+interface ServiceGridProps {
+  props: SectionContentProps;
+  onOpenQuote?: () => void;
+}
+
+const SERVICES = [
+  { slug: 've-sinh-nha-cua', title: 'Tổng Vệ Sinh Nhà Cửa', desc: 'Dọn sạch từ trần đến sàn, cọ toilet, tẩy dầu mỡ bếp, lau kính.', badge: 'Gia đình' },
+  { slug: 've-sinh-can-ho-chung-cu', title: 'Vệ Sinh Căn Hộ Chung Cư', desc: 'Quy trình chuẩn cho căn 1-3 PN, bảo vệ sàn gỗ và nội thất.', badge: 'Nhanh gọn' },
+  { slug: 've-sinh-sau-xay-dung', title: 'Vệ Sinh Sau Xây Dựng', desc: 'Sủi sơn, xi măng, hút sạch bụi mịn công nghiệp 3 mô-tơ.', badge: 'Chuyên sâu' },
+  { slug: 've-sinh-van-phong', title: 'Vệ Sinh Văn Phòng', desc: 'Làm sạch định kỳ cuối tuần, không gián đoạn giờ làm việc.', badge: 'Doanh nghiệp' },
+  { slug: 'giat-ghe-sofa', title: 'Giặt Sofa & Đệm Cao Su', desc: 'Phun hút hơi nước nóng 140°C, diệt khuẩn mạt bụi 99.9%.', badge: 'Nội thất' },
+  { slug: 'dich-vu-lau-kinh', title: 'Lau Kính Tòa Nhà / Shophouse', desc: 'Thợ đu dây chuyên nghiệp, tẩy ố vảy cá và sơn bám.', badge: 'Mặt dựng' },
+];
+
+export const ServiceGridSection: React.FC<ServiceGridProps> = ({ props }) => {
+  return (
+    <section className="py-16 bg-surface">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-text-main">
+            {props.heading || 'Dịch Vụ Vệ Sinh Trọng Tâm'}
+          </h2>
+          <p className="mt-2 text-xs sm:text-sm text-text-muted">
+            {props.subheading || 'Giải pháp làm sạch toàn diện cho gia đình và doanh nghiệp tại Hà Nội'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {SERVICES.map((s, idx) => (
+            <div
+              key={idx}
+              className="flex flex-col justify-between rounded-card border border-gray-200 bg-white p-6 shadow-sm hover:border-primary/50 hover:shadow-md transition"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="rounded bg-primary-soft px-2.5 py-0.5 text-[10px] font-bold text-primary">
+                    {s.badge}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-text-main mb-2">
+                  <Link href={`/${s.slug}`} className="hover:text-primary transition">
+                    {s.title}
+                  </Link>
+                </h3>
+                <p className="text-xs text-text-muted leading-relaxed">
+                  {s.desc}
+                </p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                <Link
+                  href={`/${s.slug}`}
+                  className="text-xs font-bold text-primary hover:underline"
+                >
+                  Xem quy trình & bảng giá →
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};

@@ -1,0 +1,34 @@
+import React from 'react';
+import { FALLBACK_SITE_CONFIG } from '@/lib/global-settings';
+import type { SectionContentProps } from '@/lib/section-schema';
+
+export const CTASection: React.FC<{ props: SectionContentProps; onOpenQuote?: () => void }> = ({ props, onOpenQuote }) => {
+  const config = FALLBACK_SITE_CONFIG;
+
+  return (
+    <section className="bg-primary text-white py-14">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 text-center">
+        <h2 className="text-2xl sm:text-4xl font-extrabold mb-3">
+          {props.heading || 'Đặt Lịch Dọn Dẹp Hôm Nay — Nhận Ưu Đãi Đầu Tuần'}
+        </h2>
+        <p className="text-xs sm:text-sm text-primary-soft max-w-2xl mx-auto mb-6 leading-relaxed">
+          {props.subheading || 'Liên hệ qua Hotline hoặc Zalo để nhân viên tư vấn gửi phương án tối ưu trong 5 phút.'}
+        </p>
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <a
+            href={`tel:${config.hotlines[0].replace(/\./g, '')}`}
+            className="w-full sm:w-auto rounded-ctrl bg-white px-6 py-3 text-xs font-bold text-primary shadow hover:bg-gray-100 transition"
+          >
+            📞 GỌI HOTLINE: {config.hotlines[0]}
+          </a>
+          <button
+            onClick={onOpenQuote}
+            className="w-full sm:w-auto rounded-ctrl border border-white/40 bg-primary-hover px-6 py-3 text-xs font-bold text-white shadow hover:bg-primary-hover/80 transition"
+          >
+            📋 NHẬN BÁO GIÁ NHANH
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};

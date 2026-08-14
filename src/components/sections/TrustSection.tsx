@@ -1,0 +1,51 @@
+import React from 'react';
+import type { SectionContentProps } from '@/lib/section-schema';
+
+export const TrustSection: React.FC<{ props: SectionContentProps }> = ({ props }) => {
+  return (
+    <section className="py-16 bg-surface-secondary border-t border-gray-100">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-text-main">
+            {props.heading || '3 Lý Do Khách Hàng Chọn Dọn Nè'}
+          </h2>
+          <p className="mt-2 text-xs sm:text-sm text-text-muted">
+            {props.subheading || 'Sự tin cậy và minh bạch là tiêu chuẩn số 1 trong mọi ca làm việc'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="rounded-card bg-white p-6 border border-gray-200 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-soft text-primary font-bold text-lg mb-4">
+              01
+            </div>
+            <h3 className="text-base font-bold text-text-main mb-2">Báo Giá Chuẩn — Không Phát Sinh</h3>
+            <p className="text-xs text-text-muted leading-relaxed">
+              Giá thỏa thuận là giá chốt thanh toán. Tuyệt đối không viện cớ phát sinh chi phí bến bãi, hóa chất hay giờ làm thêm.
+            </p>
+          </div>
+
+          <div className="rounded-card bg-white p-6 border border-gray-200 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-soft text-primary font-bold text-lg mb-4">
+              02
+            </div>
+            <h3 className="text-base font-bold text-text-main mb-2">Nhân Sự Hồ Sơ Rõ Ràng</h3>
+            <p className="text-xs text-text-muted leading-relaxed">
+              100% nhân viên ký hợp đồng chính thức, có CCCD xác minh nhân thân, được đào tạo quy chuẩn tác phong và bảo mật tài sản khách.
+            </p>
+          </div>
+
+          <div className="rounded-card bg-white p-6 border border-gray-200 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-soft text-primary font-bold text-lg mb-4">
+              03
+            </div>
+            <h3 className="text-base font-bold text-text-main mb-2">Nghiệm Thu Mới Thanh Toán</h3>
+            <p className="text-xs text-text-muted leading-relaxed">
+              Khách hàng nghiệm thu đạt chuẩn mới trả tiền. Nếu phát hiện bất kỳ điểm nào chưa ưng ý, Dọn Nè làm lại miễn phí trong 24h.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
