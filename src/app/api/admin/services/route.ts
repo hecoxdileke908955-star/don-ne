@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { requireAdminSession } from '@/lib/admin-authorization';
+import { requireSameOriginMutation } from '@/lib/admin-csrf';
 
 const serviceSchema = z.object({
   categoryId: z.string().uuid(),
@@ -27,6 +28,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   if (!await requireAdminSession()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!requireSameOriginMutation(request)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   const parsed = serviceSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'Invalid service data' }, { status: 400 });
   try {
