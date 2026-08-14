@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { enforceRateLimit } from '@/lib/rate-limit';
 import { z } from 'zod';
 
 const quoteSchema = z.object({
@@ -22,6 +23,12 @@ export async function POST(request: Request) {
     if (!parsed.success) return NextResponse.json({ error: 'Invalid quote request' }, { status: 400 });
     const { customerName, phone, serviceSlug, district, areaDetail, scheduledTime, images, customerNote, utmSource, landingPage, sessionId } = parsed.data;
     if ((images?.reduce((total, image) => total + image.length, 0) ?? 0) > 5_000_000) return NextResponse.json({ error: 'Image payload is too large' }, { status: 400 });
+    const rateLimit = await enforceRateLimit(request, 'quote');
+    if (rateLimit.status === 'unavailable') return NextResponse.json({ error: 'Quote service temporarily unavailable' }, { status: 503 });
+    if (rateLimit.status === 'limited') return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } }
+    );
     const service = serviceSlug ? await prisma.service.findFirst({ where: { slug: serviceSlug, status: 'PUBLISHED' }, select: { id: true, title: true } }) : null;
     if (serviceSlug && !service) return NextResponse.json({ error: 'Unknown service' }, { status: 400 });
 

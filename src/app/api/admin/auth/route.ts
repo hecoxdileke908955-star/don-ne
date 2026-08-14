@@ -4,6 +4,7 @@ import {
   ADMIN_SESSION_COOKIE,
   createAdminSessionToken,
 } from '@/lib/admin-session';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -40,6 +41,23 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'Server authentication is not configured' },
         { status: 500 }
+      );
+    }
+
+    const rateLimit = await enforceRateLimit(request, 'auth');
+    if (rateLimit.status === 'unavailable') {
+      return NextResponse.json(
+        { error: 'Authentication temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+    if (rateLimit.status === 'limited') {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) },
+        }
       );
     }
 

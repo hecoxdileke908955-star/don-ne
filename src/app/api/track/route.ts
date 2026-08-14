@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 const MAX_REQUEST_BYTES = 8_192;
 const trackPayloadSchema = z.object({
@@ -35,6 +36,13 @@ async function parsePayload(request: Request) {
 export async function POST(request: Request) {
   const parsed = await parsePayload(request);
   if (!parsed || !parsed.success) return NextResponse.json({ error: 'Invalid event data' }, { status: 400 });
+
+  const rateLimit = await enforceRateLimit(request, 'track');
+  if (rateLimit.status === 'unavailable') return NextResponse.json({ error: 'Tracking temporarily unavailable' }, { status: 503 });
+  if (rateLimit.status === 'limited') return NextResponse.json(
+    { error: 'Too many requests. Please try again later.' },
+    { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } }
+  );
 
   const { sessionId, eventName, pageUrl, meta } = parsed.data;
   try {

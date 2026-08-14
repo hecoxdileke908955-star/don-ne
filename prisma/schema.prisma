@@ -258,6 +258,15 @@ model TrafficEvent {
   createdAt DateTime       @default(now())
 }
 
+model RateLimitBucket {
+  key       String   @id
+  count     Int
+  expiresAt DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+}
+
 model Lead {
   id              String         @id @default(uuid())
   leadCode        String         @unique
