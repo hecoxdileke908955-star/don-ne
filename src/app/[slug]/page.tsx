@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -8,6 +8,7 @@ import { MobileStickyBar } from '@/components/MobileStickyBar';
 import { QuoteFormModal } from '@/components/QuoteFormModal';
 import { BeforeAfterSlider } from '@/components/BeforeAfterSlider';
 import { FAQSection } from '@/components/sections/FAQSection';
+import { formatPriceRange } from '@/lib/pricing-engine';
 
 interface ServiceDetailProps {
   params: { slug: string };
@@ -26,7 +27,6 @@ interface ServiceDetailData {
   whenNeeded: string[];
   includedItems: string[];
   excludedItems: string[];
-  priceText: string;
   process: ServiceProcessStep[];
 }
 
@@ -52,7 +52,6 @@ const SERVICE_DATA: Record<string, ServiceDetailData> = {
       'Giặt ghế sofa, giặt đệm cao su (ưu đãi giảm 20% khi đặt kèm gói).',
       'Lau kính ngoài trời tòa nhà cao tầng cần đu dây thừng.'
     ],
-    priceText: '12.000 – 18.000đ / m² hoặc 800.000 – 1.900.000đ / Căn hộ trọn gói',
     process: [
       { step: '1', name: 'Khảo sát & Báo giá', desc: 'Đo đạc diện tích thực tế và chốt chi phí minh bạch không phát sinh.' },
       { step: '2', name: 'Dọn thô & Hút bụi', desc: 'Thu gom rác thô và dùng máy hút bụi công nghiệp 3 mô-tơ xử lý bụi mịn.' },
@@ -79,7 +78,6 @@ const SERVICE_DATA: Record<string, ServiceDetailData> = {
     excludedItems: [
       'Vận chuyển xà bần khối lượng lớn (tính theo chuyến xe tải riêng).'
     ],
-    priceText: '15.000 – 25.000đ / m² diện tích sàn',
     process: [
       { step: '1', name: 'Tiếp nhận công trình', desc: 'Đánh giá mức độ bẩn của sơn, keo và bụi xi măng.' },
       { step: '2', name: 'Vệ sinh thô từ trên xuống', desc: 'Hút bụi trần, khe hắt đèn và tường thạch cao.' },
@@ -91,8 +89,24 @@ const SERVICE_DATA: Record<string, ServiceDetailData> = {
 
 export default function ServiceDetailPage({ params }: ServiceDetailProps) {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
+  const [priceText, setPriceText] = useState<string | null>(null);
   const slug = params.slug || 've-sinh-nha-cua';
   const data = SERVICE_DATA[slug] || SERVICE_DATA['ve-sinh-nha-cua'];
+
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Pricing unavailable');
+        return response.json();
+      })
+      .then((response) => {
+        const prices = response.items
+          .filter((item: { service: { slug: string } }) => item.service.slug === slug)
+          .map((item: { minPrice: string | number; maxPrice: string | number | null; unit: string }) => formatPriceRange(Number(item.minPrice), item.maxPrice === null ? null : Number(item.maxPrice), item.unit));
+        setPriceText(prices.length ? prices.join(' hoặc ') : null);
+      })
+      .catch(() => setPriceText(null));
+  }, [slug]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
@@ -129,7 +143,7 @@ export default function ServiceDetailPage({ params }: ServiceDetailProps) {
                 📋 ĐẶT LỊCH KHẢO SÁT / BÁO GIÁ
               </button>
               <div className="text-xs text-text-muted">
-                <strong>Đơn giá tham khảo:</strong> <span className="text-primary font-bold">{data.priceText}</span>
+                <strong>Đơn giá tham khảo:</strong> <span className="text-primary font-bold">{priceText ?? 'Bảng giá tạm thời chưa khả dụng.'}</span>
               </div>
             </div>
           </div>

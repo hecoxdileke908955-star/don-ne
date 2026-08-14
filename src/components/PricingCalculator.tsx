@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { formatVND } from '@/lib/pricing-engine';
 
 interface ServiceOption {
@@ -10,20 +10,26 @@ interface ServiceOption {
   basePrice: number;
 }
 
-const SERVICE_OPTIONS: ServiceOption[] = [
-  { id: 'opt-1', name: 'Tổng vệ sinh căn hộ chung cư', unit: 'm²', basePrice: 15000 },
-  { id: 'opt-2', name: 'Vệ sinh sau xây dựng', unit: 'm²', basePrice: 18000 },
-  { id: 'opt-3', name: 'Vệ sinh văn phòng định kỳ', unit: 'm²', basePrice: 10000 },
-  { id: 'opt-4', name: 'Giặt ghế sofa', unit: 'Bộ', basePrice: 350000 },
-  { id: 'opt-5', name: 'Giặt đệm cao su / lò xo', unit: 'Chiếc', basePrice: 300000 },
-  { id: 'opt-6', name: 'Giặt thảm văn phòng', unit: 'm²', basePrice: 12000 },
-];
-
 export const PricingCalculator: React.FC = () => {
-  const [selectedServiceId, setSelectedServiceId] = useState<string>(SERVICE_OPTIONS[0].id);
+  const [options, setOptions] = useState<ServiceOption[]>([]);
+  const [selectedServiceId, setSelectedServiceId] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(75);
 
-  const selected = SERVICE_OPTIONS.find((s) => s.id === selectedServiceId) || SERVICE_OPTIONS[0];
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Pricing unavailable');
+        return response.json();
+      })
+      .then((data) => {
+        const items = data.items.map((item: { id: string; itemName: string; unit: string; minPrice: string | number }) => ({ id: item.id, name: item.itemName, unit: item.unit, basePrice: Number(item.minPrice) }));
+        setOptions(items);
+        setSelectedServiceId(items[0]?.id ?? '');
+      })
+      .catch(() => setOptions([]));
+  }, []);
+  const selected = options.find((s) => s.id === selectedServiceId) || options[0];
+  if (!selected) return <div className="rounded-card bg-white p-6 shadow-sm border border-gray-200 text-sm text-text-muted">Bảng giá tạm thời chưa khả dụng.</div>;
   const total = selected.basePrice * quantity;
 
   return (
@@ -46,16 +52,13 @@ export const PricingCalculator: React.FC = () => {
           <select
             value={selectedServiceId}
             onChange={(e) => {
+              const next = options.find((option) => option.id === e.target.value);
               setSelectedServiceId(e.target.value);
-              if (e.target.value === 'opt-4' || e.target.value === 'opt-5') {
-                setQuantity(1);
-              } else if (quantity < 10) {
-                setQuantity(75);
-              }
+              setQuantity(next?.unit === 'm²' ? 75 : 1);
             }}
             className="w-full rounded-ctrl border border-gray-300 px-3 py-2 text-xs focus:border-primary focus:outline-none"
           >
-            {SERVICE_OPTIONS.map((opt) => (
+            {options.map((opt) => (
               <option key={opt.id} value={opt.id}>
                 {opt.name} ({formatVND(opt.basePrice)} / {opt.unit})
               </option>
