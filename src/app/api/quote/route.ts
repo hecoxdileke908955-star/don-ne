@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     if (!parsed.success) return NextResponse.json({ error: 'Invalid quote request' }, { status: 400 });
     const { customerName, phone, serviceSlug, district, areaDetail, scheduledTime, images, customerNote, utmSource, landingPage, sessionId } = parsed.data;
     if ((images?.reduce((total, image) => total + image.length, 0) ?? 0) > 5_000_000) return NextResponse.json({ error: 'Image payload is too large' }, { status: 400 });
-    const service = serviceSlug ? await prisma.service.findUnique({ where: { slug: serviceSlug }, select: { id: true, title: true } }) : null;
+    const service = serviceSlug ? await prisma.service.findFirst({ where: { slug: serviceSlug, status: 'PUBLISHED' }, select: { id: true, title: true } }) : null;
     if (serviceSlug && !service) return NextResponse.json({ error: 'Unknown service' }, { status: 400 });
 
     const leadCode = 'DN-' + Math.floor(10000 + Math.random() * 90000);

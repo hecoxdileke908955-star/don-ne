@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { parseAttributionClient, trackClientEvent } from '@/lib/traffic-tracker';
@@ -26,6 +26,13 @@ export const QuoteFormModal: React.FC<QuoteFormModalProps> = ({
   const [note, setNote] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [services, setServices] = useState<{ slug: string; title: string }[]>([]);
+  useEffect(() => {
+    fetch('/api/services').then(async response => { if (!response.ok) throw new Error(); return response.json(); }).then(data => {
+      setServices(data.services);
+      if (!data.services.some((service: { slug: string }) => service.slug === serviceSlug)) setServiceSlug(data.services[0]?.slug ?? '');
+    }).catch(() => setServices([]));
+  }, [serviceSlug]);
 
   if (!isOpen) return null;
 
@@ -189,13 +196,7 @@ export const QuoteFormModal: React.FC<QuoteFormModalProps> = ({
                 onChange={(e) => setServiceSlug(e.target.value)}
                 className="w-full rounded-ctrl border border-gray-300 px-3 py-2 text-xs focus:border-primary focus:outline-none"
               >
-                <option value="ve-sinh-nha-cua">Tổng vệ sinh nhà cửa</option>
-                <option value="ve-sinh-can-ho-chung-cu">Vệ sinh căn hộ chung cư</option>
-                <option value="ve-sinh-sau-xay-dung">Vệ sinh sau xây dựng</option>
-                <option value="ve-sinh-van-phong">Vệ sinh văn phòng</option>
-                <option value="giat-ghe-sofa">Giặt sofa / Nệm / Thảm</option>
-                <option value="dich-vu-lau-kinh">Lau kính tòa nhà / Showroom</option>
-                <option value="ve-sinh-san-pickleball">Vệ sinh sân Pickleball / Sân sàn</option>
+                {services.map((service) => <option key={service.slug} value={service.slug}>{service.title}</option>)}
               </select>
             </div>
             <div>

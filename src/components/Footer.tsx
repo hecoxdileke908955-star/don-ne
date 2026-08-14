@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs text-text-muted">
               <li><Link href="/ve-sinh-nha-cua" className="hover:text-primary">Tổng vệ sinh nhà cửa</Link></li>
-              <li><Link href="/ve-sinh-can-ho-chung-cu" className="hover:text-primary">Vệ sinh căn hộ chung cư</Link></li>
+              <li><Link href="/dich-vu" className="hover:text-primary">Danh mục dịch vụ</Link></li>
               <li><Link href="/ve-sinh-sau-xay-dung" className="hover:text-primary">Vệ sinh sau xây dựng</Link></li>
               <li><Link href="/ve-sinh-van-phong" className="hover:text-primary">Vệ sinh văn phòng</Link></li>
               <li><Link href="/giat-ghe-sofa" className="hover:text-primary">Giặt ghế sofa & Nệm</Link></li>
