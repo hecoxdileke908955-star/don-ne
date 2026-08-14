@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 import { trackClientEvent } from '@/lib/traffic-tracker';
+import { HiddenAdminEntryLogo } from '@/components/HiddenAdminEntryLogo';
 
 interface HeaderProps { onOpenQuote?: () => void; }
 
@@ -17,10 +18,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
 
   return <header className="sticky top-0 z-40 w-full border-b border-gray-100 bg-white/95 backdrop-blur-md">
     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-      <Link href="/" className="flex items-center gap-2">
+      <HiddenAdminEntryLogo className="flex items-center gap-2 select-none">
         <div className="relative h-10 w-10 overflow-hidden rounded-lg"><Image src="/logo-web.png" alt={config?.brandName ? `${config.brandName} Logo` : 'Logo'} fill className="object-contain" priority /></div>
         <div>{config ? <><span className="text-xl font-black tracking-tight text-primary">{config.brandName}</span><span className="hidden sm:block text-[10px] font-medium text-text-muted">{config.slogan}</span></> : <span className="text-xs font-medium text-text-muted">Thông tin tạm thời chưa khả dụng</span>}</div>
-      </Link>
+      </HiddenAdminEntryLogo>
       <nav className="hidden items-center gap-6 text-sm font-medium text-text-main md:flex">
         <Link href="/dich-vu" className="transition hover:text-primary">Dịch Vụ</Link><Link href="/bang-gia" className="transition hover:text-primary">Bảng Giá 2026</Link>
       </nav>
