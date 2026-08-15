@@ -3,6 +3,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HomePageClient } from '@/components/HomePageClient';
 import { getPublishedHomePage } from '@/lib/page-data';
+import { getPublicFaqs } from '@/lib/faq-data';
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPublishedHomePage();
@@ -33,5 +34,7 @@ export default async function HomePage() {
     );
   }
 
-  return <HomePageClient sections={page.sections} />;
+  const faqs = await getPublicFaqs();
+
+  return <HomePageClient sections={page.sections} faqs={faqs} />;
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { SectionData } from '@/lib/section-schema';
+import type { PublicFaq } from '@/lib/faq-data';
 import { HeroSection } from './HeroSection';
 import { ServiceGridSection } from './ServiceGridSection';
 import { PricingPreviewSection } from './PricingPreviewSection';
@@ -13,9 +14,10 @@ import { CTASection } from './CTASection';
 interface RendererProps {
   sections: SectionData[];
   onOpenQuote?: () => void;
+  faqs?: PublicFaq[];
 }
 
-export const DynamicSectionRenderer: React.FC<RendererProps> = ({ sections, onOpenQuote }) => {
+export const DynamicSectionRenderer: React.FC<RendererProps> = ({ sections, onOpenQuote, faqs = [] }) => {
   const visibleSections = sections.filter((s) => s.visible).sort((a, b) => a.order - b.order);
 
   return (
@@ -37,7 +39,7 @@ export const DynamicSectionRenderer: React.FC<RendererProps> = ({ sections, onOp
           case 'ServiceAreas':
             return <ServiceAreasSection key={idx} props={sec.props} />;
           case 'FAQ':
-            return <FAQSection key={idx} props={sec.props} />;
+            return <FAQSection key={idx} props={sec.props} faqs={faqs} />;
           case 'CTA':
             return <CTASection key={idx} props={sec.props} onOpenQuote={onOpenQuote} />;
           default:

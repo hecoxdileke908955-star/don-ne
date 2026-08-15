@@ -1,8 +1,10 @@
 import { getDraftHomePage } from '@/lib/page-data';
+import { getPublicFaqs } from '@/lib/faq-data';
 import { DynamicSectionRenderer } from '@/components/sections/DynamicSectionRenderer';
 
 export default async function AdminHomePagePreview() {
   const page = await getDraftHomePage().catch(() => null);
+  const faqs = await getPublicFaqs();
 
   return (
     <div className="min-h-screen bg-surface-secondary">
@@ -10,7 +12,7 @@ export default async function AdminHomePagePreview() {
         XEM THỬ BẢN NHÁP — nội dung này chưa được xuất bản công khai
       </div>
       {page ? (
-        <DynamicSectionRenderer sections={page.sections} />
+        <DynamicSectionRenderer sections={page.sections} faqs={faqs} />
       ) : (
         <p className="p-8 text-center text-sm text-text-muted">Không thể tải bản nháp trang chủ.</p>
       )}

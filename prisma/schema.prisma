@@ -142,6 +142,7 @@ model FAQ {
   answer    String
   sortOrder Int      @default(0)
   isGlobal  Boolean  @default(false)
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 }
 

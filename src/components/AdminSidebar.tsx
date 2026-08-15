@@ -13,6 +13,7 @@ export const AdminSidebar: React.FC<{ role: UserRole }> = ({ role }) => {
             <Link href="/admin" className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary">Tổng quan Dashboard</Link>
             <Link href="/admin/pages" className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary">Trang nội dung</Link>
             <Link href="/admin/services" className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary">Dịch vụ & Danh mục</Link>
+            <Link href="/admin/faqs" className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary">Câu hỏi thường gặp</Link>
           </nav>
         </div>
         <div className="border-t border-gray-100 pt-3 text-[11px] text-text-muted">
@@ -67,6 +68,13 @@ export const AdminSidebar: React.FC<{ role: UserRole }> = ({ role }) => {
             className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary"
           >
             Dịch vụ & Danh mục
+          </Link>
+
+          <Link
+            href="/admin/faqs"
+            className="block rounded-ctrl px-3 py-2 font-semibold hover:bg-surface-secondary"
+          >
+            Câu hỏi thường gặp
           </Link>
 
           <Link
