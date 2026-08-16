@@ -46,8 +46,9 @@ export default function AboutPage() {
           />
 
           <p className="text-sm leading-relaxed text-text-muted">
-            {config?.brandName ?? 'Dọn Nè'} là đơn vị cung cấp dịch vụ vệ sinh nhà ở, văn phòng, công trình và nội thất tại Hà Nội,
-            với đội ngũ nhân sự có hồ sơ nhân thân rõ ràng và trang thiết bị chuyên dụng cho từng hạng mục công việc.
+            {config?.brandName ?? 'Dọn Nè'} là đơn vị cung cấp dịch vụ vệ sinh nhà ở, văn phòng, công trình và nội thất tại
+            Văn Giang, Hưng Yên và khu vực lân cận, với đội ngũ nhân sự có hồ sơ nhân thân rõ ràng và trang thiết bị
+            chuyên dụng cho từng hạng mục công việc.
           </p>
           {config?.footerCommitment && (
             <p className="mt-3 text-sm leading-relaxed text-text-muted">{config.footerCommitment}</p>

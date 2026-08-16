@@ -70,7 +70,7 @@ export const HeroSection: React.FC<HeroProps> = ({ props, onOpenQuote }) => {
             <div className="text-center lg:flex-1 lg:text-left">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white mb-6">
                 <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                {props.badgeText || 'DỊCH VỤ VỆ SINH CHUYÊN NGHIỆP HÀ NỘI'}
+                {props.badgeText || 'DỊCH VỤ VỆ SINH CHUYÊN NGHIỆP VĂN GIANG, HƯNG YÊN'}
               </div>
 
               <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl md:text-6xl max-w-4xl mx-auto lg:mx-0 leading-tight">

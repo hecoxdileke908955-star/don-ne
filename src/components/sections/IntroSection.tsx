@@ -34,7 +34,7 @@ export const IntroSection: React.FC = () => {
           <div className="order-1 text-center lg:order-2 lg:text-left">
             <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary">Về Dọn Nè</p>
             <h2 className="text-2xl font-extrabold text-text-main sm:text-3xl">
-              Đơn Vị Cung Cấp Dịch Vụ Vệ Sinh Toàn Diện Tại Hà Nội
+              Đơn Vị Cung Cấp Dịch Vụ Vệ Sinh Toàn Diện Tại Văn Giang, Hưng Yên
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-text-muted">
               Dọn Nè cung cấp các dịch vụ vệ sinh nhà ở, căn hộ chung cư, văn phòng, sau xây dựng cùng dịch vụ giặt

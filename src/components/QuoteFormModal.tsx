@@ -22,7 +22,7 @@ export const QuoteFormModal: React.FC<QuoteFormModalProps> = ({
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
   const [serviceSlug, setServiceSlug] = useState(defaultServiceSlug);
-  const [district, setDistrict] = useState('Cầu Giấy');
+  const [district, setDistrict] = useState('Văn Giang');
   const [areaDetail, setAreaDetail] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   const [note, setNote] = useState('');
@@ -129,7 +129,7 @@ export const QuoteFormModal: React.FC<QuoteFormModalProps> = ({
             Nhận Báo Giá Dọn Nè Trọn Gói
           </h3>
           <p className="mt-1 text-xs text-text-muted">
-            Khảo sát & tư vấn miễn phí tại Hà Nội. Nghiệm thu hài lòng mới thanh toán.
+            Khảo sát & tư vấn miễn phí tại Văn Giang, Hưng Yên và khu vực lân cận. Nghiệm thu hài lòng mới thanh toán.
           </p>
         </div>
 
@@ -203,25 +203,20 @@ export const QuoteFormModal: React.FC<QuoteFormModalProps> = ({
             </div>
             <div>
               <label className="block text-xs font-medium text-text-main mb-1">
-                Khu vực tại Hà Nội
+                Khu vực
               </label>
               <select
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 className="w-full rounded-ctrl border border-gray-300 px-3 py-2 text-xs focus:border-primary focus:outline-none"
               >
-                <option value="Cầu Giấy">Cầu Giấy</option>
-                <option value="Đống Đa">Đống Đa</option>
-                <option value="Long Biên">Long Biên</option>
-                <option value="Hà Đông">Hà Đông</option>
-                <option value="Nam Từ Liêm">Nam Từ Liêm</option>
-                <option value="Bắc Từ Liêm">Bắc Từ Liêm</option>
-                <option value="Thanh Xuân">Thanh Xuân</option>
-                <option value="Ba Đình">Ba Đình</option>
-                <option value="Tây Hồ">Tây Hồ</option>
-                <option value="Hoàng Mai">Hoàng Mai</option>
-                <option value="Hai Bà Trưng">Hai Bà Trưng</option>
-                <option value="Gia Lâm">Gia Lâm</option>
+                <option value="Vinhomes Ocean Park 2">Vinhomes Ocean Park 2</option>
+                <option value="Vinhomes Ocean Park 3">Vinhomes Ocean Park 3</option>
+                <option value="Nghĩa Trụ">Nghĩa Trụ</option>
+                <option value="Như Quỳnh">Như Quỳnh</option>
+                <option value="Phụng Công – Ecopark">Phụng Công – Ecopark</option>
+                <option value="Văn Giang">Văn Giang</option>
+                <option value="Khu vực lân cận">Khu vực lân cận (trong bán kính ~10km)</option>
               </select>
             </div>
           </div>

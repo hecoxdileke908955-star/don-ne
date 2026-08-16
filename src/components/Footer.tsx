@@ -11,9 +11,12 @@ type FooterService = { slug: string; title: string };
 // STATIC TEMPORARY: Dọn Nè has no Location CMS yet (see Step 8 planning —
 // deferred AFTER V1). This list is display copy only, not linked to
 // individual district pages that don't exist, to avoid broken/fake routes.
+//
+// Service area relocated: company address is 146 Vịnh Thiên Đường 7, Văn
+// Giang, Hưng Yên — reflects the real ~10km radius, not Hanoi districts.
 const SERVICE_AREAS = [
-  'Cầu Giấy', 'Đống Đa', 'Long Biên', 'Hà Đông',
-  'Nam Từ Liêm', 'Bắc Từ Liêm', 'Thanh Xuân', 'Ba Đình',
+  'Vinhomes Ocean Park 2', 'Vinhomes Ocean Park 3', 'Nghĩa Trụ',
+  'Như Quỳnh', 'Phụng Công – Ecopark', 'Văn Giang',
 ];
 
 export const Footer: React.FC = () => {
@@ -95,7 +98,7 @@ export const Footer: React.FC = () => {
       <div className="border-t border-white/10 bg-black/20 py-5">
         <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p>© {new Date().getFullYear()} {config.brandName}. All rights reserved.</p>
-          <p>Phục vụ khách hàng cá nhân, doanh nghiệp và cơ sở kinh doanh tại Hà Nội.</p>
+          <p>Phục vụ khách hàng cá nhân, doanh nghiệp và cơ sở kinh doanh tại Văn Giang, Hưng Yên và khu vực lân cận.</p>
         </div>
       </div>
     </footer>

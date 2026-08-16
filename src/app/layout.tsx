@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = config?.slogan ?? 'Thông tin website tạm thời chưa khả dụng.';
 
   return {
-    title: `${brandName} — Dịch Vụ Vệ Sinh Chuyên Nghiệp Hà Nội`,
+    title: `${brandName} — Dịch Vụ Vệ Sinh Chuyên Nghiệp Văn Giang, Hưng Yên`,
     description,
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
     icons: { icon: '/favicon.png', apple: '/favicon.png' },

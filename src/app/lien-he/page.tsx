@@ -30,9 +30,9 @@ export default function ContactPage() {
           />
 
           <p className="mb-8 text-sm leading-relaxed text-text-muted">
-            {config?.brandName ?? 'Dọn Nè'} tiếp nhận yêu cầu dịch vụ vệ sinh tại Hà Nội qua hotline, Zalo hoặc biểu
-            mẫu bên dưới. Để được báo giá nhanh và chính xác, quý khách có thể gửi kèm mô tả hiện trạng hoặc diện
-            tích cần vệ sinh.
+            {config?.brandName ?? 'Dọn Nè'} tiếp nhận yêu cầu dịch vụ vệ sinh tại Văn Giang, Hưng Yên và khu vực lân
+            cận qua hotline, Zalo hoặc biểu mẫu bên dưới. Để được báo giá nhanh và chính xác, quý khách có thể gửi
+            kèm mô tả hiện trạng hoặc diện tích cần vệ sinh.
           </p>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
