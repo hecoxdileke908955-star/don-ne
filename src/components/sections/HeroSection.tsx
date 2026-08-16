@@ -90,8 +90,8 @@ export const HeroSection: React.FC<HeroProps> = ({ props, onOpenQuote }) => {
               <Image
                 src="/images/home/dn-hero-01.jpeg"
                 alt="Nhân viên Dọn Nè thực hiện dịch vụ vệ sinh chuyên nghiệp"
-                width={1200}
-                height={900}
+                width={5504}
+                height={3072}
                 priority
                 fetchPriority="high"
                 quality={100}

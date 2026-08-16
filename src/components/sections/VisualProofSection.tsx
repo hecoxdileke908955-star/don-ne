@@ -31,10 +31,30 @@ export const VisualProofSection: React.FC = () => {
           </p>
         </div>
 
+        {/*
+          Bugfix: `fill` (position:absolute + height:100%) does not reliably
+          resolve its percentage height against this wrapper in this
+          environment — verified via getBoundingClientRect()/computed style:
+          the wrapper correctly measured 4:3 (e.g. 296×222) but the <img>
+          itself computed to ~164.95px tall (its own intrinsic aspect ratio
+          at the rendered width), leaving a gap under wide-ratio source
+          photos while the near-4:3 photo showed almost no gap — exactly the
+          reported symptom. Same root cause/fix as HeroSection.tsx: use
+          explicit width/height + h-full w-full object-cover instead of
+          `fill`, which reliably respects the wrapper's aspect-ratio box.
+        */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {GALLERY.map((img) => (
             <div key={img.src} className="relative aspect-[4/3] overflow-hidden rounded-[20px] shadow-sm">
-              <Image src={img.src} alt={img.alt} fill quality={100} sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
+              <Image
+                src={img.src}
+                alt={img.alt}
+                width={800}
+                height={600}
+                quality={100}
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                className="h-full w-full object-cover"
+              />
             </div>
           ))}
         </div>
