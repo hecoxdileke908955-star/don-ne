@@ -13,6 +13,8 @@ const serviceSchema = z.object({
   badge: z.string().trim().max(120).nullable(),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
   sortOrder: z.number().int().min(0),
+  seoTitle: z.string().trim().max(160).nullable().optional(),
+  seoDescription: z.string().trim().max(320).nullable().optional(),
 });
 
 export async function GET() {
