@@ -40,7 +40,17 @@ export const Header: React.FC<HeaderProps> = () => {
   return <header className="sticky top-0 z-40 w-full border-b border-gray-100 bg-white/95 backdrop-blur-md">
     <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
       <HiddenAdminEntryLogo className="flex shrink-0 items-center gap-2 select-none">
-        <div className="relative h-10 w-10 overflow-hidden rounded-lg"><Image src="/logo-web.png" alt={config?.brandName ? `${config.brandName} Logo` : 'Logo'} fill className="object-contain" priority /></div>
+        {/* logo-web.png is a 1024x1536 (2:3) portrait graphic with an opaque
+            background — not a square icon with transparent padding. Inside
+            the old square h-10 w-10 box, object-contain fit it by height,
+            leaving the box's full 40px height used but only ~27px of width
+            rendered (1024/1536 * 40) with empty space on both sides — the
+            logo already touched the box edge, it was just rendered small
+            and soft. Sizing the wrapper to the image's own aspect ratio
+            (instead of forcing it into a square) removes that dead space so
+            the same box height converts directly into a larger, sharper
+            rendered logo instead of wasted width. */}
+        <div className="relative h-[43px] w-[29px] overflow-hidden rounded-lg lg:h-[50px] lg:w-[33px]"><Image src="/logo-web.png" alt={config?.brandName ? `${config.brandName} Logo` : 'Logo'} fill className="object-contain" priority /></div>
         <div>{config ? <><span className="text-xl font-black tracking-tight text-primary">{config.brandName}</span><span className="hidden sm:block text-[10px] font-medium text-text-muted">{config.slogan}</span></> : <span className="text-xs font-medium text-text-muted">Thông tin tạm thời chưa khả dụng</span>}</div>
       </HiddenAdminEntryLogo>
 
