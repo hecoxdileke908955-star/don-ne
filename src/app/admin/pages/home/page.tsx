@@ -49,44 +49,84 @@ export default function AdminHomePageEditor() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, []);
 
-  const saveMeta = async () => {
-    if (!page) return;
-    setSavingMeta(true);
-    setMessage('');
+  // Shared with saveMeta() and the pre-publish auto-save in publish() below,
+  // so both paths PATCH with the exact same payload shape and error mapping.
+  const patchMeta = async (pageDraft: PageMeta): Promise<{ ok: boolean; error?: string }> => {
     const response = await fetch('/api/admin/pages/home', {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ seoTitle: page.seoTitle, seoDescription: page.seoDescription }),
+      body: JSON.stringify({ seoTitle: pageDraft.seoTitle, seoDescription: pageDraft.seoDescription }),
     });
-    const data = await response.json();
-    setSavingMeta(false);
-    if (!response.ok) { setMessage(data.error || 'Không thể lưu SEO.'); return; }
-    setMessage('Đã lưu SEO (bản nháp).');
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) return { ok: false, error: data.error || 'Không thể lưu SEO.' };
+    return { ok: true };
   };
 
-  const saveSection = async (section: Section) => {
-    setSavingSectionId(section.id);
-    setMessage('');
+  // Shared with saveSection() and the pre-publish auto-save in publish().
+  const patchSection = async (section: Section): Promise<{ ok: boolean; error?: string }> => {
     const response = await fetch(`/api/admin/pages/home/sections/${section.id}`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ visible: section.visible, sortOrder: section.order, props: section.props }),
     });
-    const data = await response.json();
-    setSavingSectionId(null);
-    if (!response.ok) { setMessage(data.error || 'Không thể lưu khối nội dung.'); return; }
-    setMessage(`Đã lưu khối "${section.type}" (bản nháp).`);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) return { ok: false, error: data.error || `Không thể lưu khối "${section.type}".` };
+    return { ok: true };
   };
 
+  const saveMeta = async () => {
+    if (!page) return;
+    setSavingMeta(true);
+    setMessage('');
+    const result = await patchMeta(page);
+    setSavingMeta(false);
+    setMessage(result.ok ? 'Đã lưu SEO (bản nháp).' : (result.error as string));
+  };
+
+  const saveSection = async (section: Section) => {
+    setSavingSectionId(section.id);
+    setMessage('');
+    const result = await patchSection(section);
+    setSavingSectionId(null);
+    setMessage(result.ok ? `Đã lưu khối "${section.type}" (bản nháp).` : (result.error as string));
+  };
+
+  // Publish must reflect exactly what's on the form right now, not whatever
+  // was last saved to the DB via individual "Lưu khối này" clicks — those are
+  // optional per-block conveniences, not a precondition for Publish. So
+  // Publish first auto-saves SEO + every section from current form state,
+  // and only calls the publish endpoint (which snapshots the DRAFT rows)
+  // once every one of those saves has actually succeeded. Any single save
+  // failure stops here — the publish endpoint is never called and "Đã xuất
+  // bản" is never shown, so a half-applied save can never look like success.
   const publish = async () => {
+    if (!page) return;
     setPublishing(true);
     setMessage('');
+
+    const metaResult = await patchMeta(page);
+    if (!metaResult.ok) {
+      setPublishing(false);
+      setMessage(`Không thể lưu SEO — đã dừng xuất bản: ${metaResult.error}`);
+      return;
+    }
+
+    for (const section of sections) {
+      const sectionResult = await patchSection(section);
+      if (!sectionResult.ok) {
+        setPublishing(false);
+        setMessage(`Không thể lưu khối "${section.type}" — đã dừng xuất bản: ${sectionResult.error}`);
+        return;
+      }
+    }
+
     const response = await fetch('/api/admin/pages/home/publish', { method: 'POST' });
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
     setPublishing(false);
     if (!response.ok) { setMessage(data.error || 'Không thể xuất bản.'); return; }
-    setMessage('Đã xuất bản lên trang chủ công khai.');
+
     await load();
+    setMessage('Đã lưu và xuất bản lên trang chủ công khai.');
   };
 
   const updateSectionField = (id: string, field: keyof SectionProps, value: string) => {
