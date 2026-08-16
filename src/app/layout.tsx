@@ -20,7 +20,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${brandName} — Dịch Vụ Vệ Sinh Chuyên Nghiệp Văn Giang, Hưng Yên`,
     description,
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-    icons: { icon: '/favicon.png', apple: '/favicon.png' },
+    // No explicit `icons` field here: '/favicon.png' never existed in
+    // public/, so this was pointing the tab icon at a dead URL. Removing it
+    // lets Next.js's own file-convention detection of src/app/icon.png
+    // (the user's real favicon source) generate the <link rel="icon"> tag
+    // instead — that auto-detection is fully suppressed whenever an
+    // explicit `icons` field is present, even one aimed at nothing.
     openGraph: { title: brandName, description, images: ['/logo-web.png'] },
   };
 }
