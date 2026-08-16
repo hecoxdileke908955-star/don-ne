@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
 import { requireAdminRole } from '@/lib/admin-authorization';
 import { requireSameOriginMutation } from '@/lib/admin-csrf';
@@ -39,6 +40,14 @@ export async function POST(request: Request) {
         data: { status: 'PUBLISHED' },
       });
     });
+
+    // Full Route Cache invalidation: `/` has no dynamic API usage
+    // (no cookies/headers/searchParams) and reads via Prisma rather than
+    // `fetch`, so Next statically caches its rendered output (including
+    // generateMetadata) until explicitly revalidated. Only run this after
+    // the transaction above has committed — a failed publish must not
+    // invalidate the still-correct cached homepage.
+    revalidatePath('/');
 
     return NextResponse.json({ published: true });
   } catch {
