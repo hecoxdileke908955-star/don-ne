@@ -6,7 +6,9 @@ import { Footer } from '@/components/Footer';
 import { MobileStickyBar } from '@/components/MobileStickyBar';
 import { QuoteFormModal } from '@/components/QuoteFormModal';
 import { PricingCalculator } from '@/components/PricingCalculator';
+import { PageBanner } from '@/components/PageBanner';
 import { formatVND } from '@/lib/pricing-engine';
+import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 const ALL_CATEGORY = 'Tất cả';
 
@@ -22,6 +24,7 @@ type PublicPriceItem = {
 };
 
 export default function PricingPage() {
+  const config = useSiteConfig();
   const [selectedCat, setSelectedCat] = useState(ALL_CATEGORY);
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [items, setItems] = useState<PublicPriceItem[]>([]);
@@ -55,14 +58,29 @@ export default function PricingPage() {
     <div className="min-h-screen flex flex-col justify-between">
       <Header onOpenQuote={() => setIsQuoteOpen(true)} />
       <main className="flex-1 py-12 bg-surface-secondary">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <span className="rounded bg-primary-soft px-3 py-1 text-xs font-bold text-primary">CẬP NHẬT 2026</span>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-text-main mt-3">Bảng Giá Dịch Vụ Vệ Sinh Dọn Nè</h1>
-            <p className="mt-2 text-xs sm:text-sm text-text-muted leading-relaxed">Bảng giá niêm yết công khai, minh bạch. Đọc trực tiếp từ hệ thống quản lý giá tập trung (Single Source of Truth), cam kết không phát sinh bất kỳ khoản phụ phí nào ngoài hợp đồng.</p>
-          </div>
+        {/* Round 4.2: narrower single-column content shell (max-w-[860px]),
+            matching the reference /bang-gia/ page-shell order confirmed by
+            opening the real page — plain H1, then a banner photo, then a
+            short intro paragraph, before the page's own content. The
+            calculator/table/API/quote-modal logic below is unchanged. */}
+        <div className="mx-auto max-w-[860px] px-4 sm:px-6">
+          <span className="rounded bg-primary-soft px-3 py-1 text-xs font-bold text-primary">CẬP NHẬT 2026</span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-text-main mt-3">Bảng Giá Dịch Vụ Vệ Sinh Dọn Nè</h1>
 
-          <div className="mb-10"><PricingCalculator /></div>
+          <PageBanner
+            caption={`${config?.brandName ?? 'Dọn Nè'} — Bảng giá vệ sinh 2026`}
+            image="/images/home/dn-equipment-01.jpeg"
+            imageAlt="Thiết bị vệ sinh chuyên dụng Dọn Nè sử dụng khi thi công"
+          />
+
+          <p className="text-sm leading-relaxed text-text-muted">
+            Bảng giá niêm yết công khai, minh bạch, đọc trực tiếp từ hệ thống quản lý giá tập trung (Single Source of
+            Truth) của {config?.brandName ?? 'Dọn Nè'} — cam kết không phát sinh bất kỳ khoản phụ phí nào ngoài hợp
+            đồng. Đơn giá dưới đây áp dụng cho các hạng mục phổ biến; với công trình lớn hoặc hiện trạng phức tạp,
+            đội ngũ sẽ khảo sát trước khi chốt chi phí cuối cùng.
+          </p>
+
+          <div className="my-8"><PricingCalculator /></div>
 
           <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
             {categories.map((cat) => (
@@ -72,7 +90,7 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <div className="overflow-hidden rounded-card border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-x-auto overflow-y-hidden rounded-card border border-gray-200 bg-white shadow-sm">
             <table className="w-full text-left text-xs text-text-main">
               <thead className="border-b border-gray-200 bg-surface-secondary text-[11px] font-bold uppercase text-text-muted">
                 <tr><th className="px-4 py-3.5">Hạng Mục Dịch Vụ</th><th className="px-4 py-3.5">Đơn vị</th><th className="px-4 py-3.5">Đơn Giá Niêm Yết</th><th className="px-4 py-3.5 hidden md:table-cell">Điều Kiện Áp Dụng</th><th className="px-4 py-3.5 text-right">Tác Vụ</th></tr>
@@ -93,6 +111,14 @@ export default function PricingPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="mt-8 rounded-2xl bg-primary p-6 text-center text-white sm:p-8">
+            <h2 className="text-lg font-bold">Chưa Rõ Hạng Mục Cần Báo Giá?</h2>
+            <p className="mt-1 text-xs text-primary-soft">Gửi ảnh/mô tả hiện trạng, {config?.brandName ?? 'Dọn Nè'} tư vấn chi phí trong 5 phút.</p>
+            <button onClick={() => setIsQuoteOpen(true)} className="mt-4 rounded-ctrl bg-white px-6 py-3 text-sm font-bold text-primary shadow hover:bg-gray-100">
+              Nhận Báo Giá Ngay
+            </button>
           </div>
         </div>
       </main>

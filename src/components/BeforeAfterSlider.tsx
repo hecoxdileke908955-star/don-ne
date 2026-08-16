@@ -1,6 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
+
+interface BeforeAfterImage {
+  src: string;
+  alt: string;
+}
 
 interface BeforeAfterItem {
   title: string;
@@ -9,6 +15,8 @@ interface BeforeAfterItem {
   afterLabel: string;
   beforeDesc: string;
   afterDesc: string;
+  beforeImage?: BeforeAfterImage;
+  afterImage?: BeforeAfterImage;
 }
 
 const ITEMS: BeforeAfterItem[] = [
@@ -21,12 +29,14 @@ const ITEMS: BeforeAfterItem[] = [
     afterDesc: 'Sàn sáng bóng, đường ron trắng sạch, khử sạch hoàn toàn bụi mịn.'
   },
   {
-    title: 'Đệm cao su ố vàng & ẩm mốc',
+    title: 'Ghế sofa bám bẩn & ố vàng',
     category: 'Giặt đệm & Sofa',
-    beforeLabel: 'Trước khi giặt',
-    afterLabel: 'Sau khi xử lý',
+    beforeLabel: 'Trước vệ sinh',
+    afterLabel: 'Sau vệ sinh',
     beforeDesc: 'Ố vàng do mồ hôi lâu ngày, có mùi ẩm khó chịu.',
-    afterDesc: 'Phun hút nước nóng 140°C tẩy sạch vết ố, thơm tinh dầu tự nhiên.'
+    afterDesc: 'Phun hút nước nóng 140°C tẩy sạch vết ố, thơm tinh dầu tự nhiên.',
+    beforeImage: { src: '/images/home/dn-before-01.jpeg', alt: 'Ghế sofa trước khi Dọn Nè vệ sinh' },
+    afterImage: { src: '/images/home/dn-after-01.jpeg', alt: 'Ghế sofa sau khi Dọn Nè vệ sinh' },
   },
   {
     title: 'Kính mặt dựng ngoài trời bám vảy canxi',
@@ -66,27 +76,55 @@ export const BeforeAfterSlider: React.FC = () => {
       {/* Comparison Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Before Box */}
-        <div className="rounded-ctrl border border-red-200 bg-red-50/50 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="rounded bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 uppercase">
-              {current.beforeLabel}
-            </span>
+        <div className="overflow-hidden rounded-ctrl border border-red-200 bg-red-50/50">
+          {current.beforeImage && (
+            <div className="relative aspect-[4/3] w-full">
+              <Image
+                src={current.beforeImage.src}
+                alt={current.beforeImage.alt}
+                fill
+                quality={100}
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+          )}
+          <div className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="rounded bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 uppercase">
+                {current.beforeLabel}
+              </span>
+            </div>
+            <p className="text-xs text-text-muted leading-relaxed">
+              {current.beforeDesc}
+            </p>
           </div>
-          <p className="text-xs text-text-muted leading-relaxed">
-            {current.beforeDesc}
-          </p>
         </div>
 
         {/* After Box */}
-        <div className="rounded-ctrl border border-primary/30 bg-primary-soft/50 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="rounded bg-primary text-white px-2 py-0.5 text-[10px] font-bold uppercase">
-              {current.afterLabel}
-            </span>
+        <div className="overflow-hidden rounded-ctrl border border-primary/30 bg-primary-soft/50">
+          {current.afterImage && (
+            <div className="relative aspect-[4/3] w-full">
+              <Image
+                src={current.afterImage.src}
+                alt={current.afterImage.alt}
+                fill
+                quality={100}
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+          )}
+          <div className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="rounded bg-primary text-white px-2 py-0.5 text-[10px] font-bold uppercase">
+                {current.afterLabel}
+              </span>
+            </div>
+            <p className="text-xs text-text-main font-medium leading-relaxed">
+              {current.afterDesc}
+            </p>
           </div>
-          <p className="text-xs text-text-main font-medium leading-relaxed">
-            {current.afterDesc}
-          </p>
         </div>
       </div>
     </div>

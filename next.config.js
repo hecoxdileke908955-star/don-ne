@@ -39,16 +39,6 @@ const nextConfig = {
         destination: '/giat-ghe-sofa',
         permanent: true,
       },
-      {
-        source: '/khu-vuc-phuc-vu',
-        destination: '/khu-vuc',
-        permanent: true,
-      },
-      {
-        source: '/cam-nang-ve-sinh',
-        destination: '/cam-nang',
-        permanent: true,
-      },
     ];
   },
 };

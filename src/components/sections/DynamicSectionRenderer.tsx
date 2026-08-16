@@ -10,6 +10,10 @@ import { ProcessSection } from './ProcessSection';
 import { ServiceAreasSection } from './ServiceAreasSection';
 import { FAQSection } from './FAQSection';
 import { CTASection } from './CTASection';
+import { IntroSection } from './IntroSection';
+import { EquipmentSection } from './EquipmentSection';
+import { VisualProofSection } from './VisualProofSection';
+import { ReviewsSection } from './ReviewsSection';
 
 interface RendererProps {
   sections: SectionData[];
@@ -20,6 +24,11 @@ interface RendererProps {
 export const DynamicSectionRenderer: React.FC<RendererProps> = ({ sections, onOpenQuote, faqs = [] }) => {
   const visibleSections = sections.filter((s) => s.visible).sort((a, b) => a.order - b.order);
 
+  // Static public-only sections (no SectionType exists for these in the CMS
+  // enum — adding one would require a schema migration + admin UI, out of
+  // scope). They are inserted immediately after the CMS-driven section they
+  // follow in the reference homepage order, so admin-controlled ordering of
+  // the 9 real SectionTypes is left untouched.
   return (
     <div>
       {visibleSections.map((sec, idx) => {
@@ -27,7 +36,12 @@ export const DynamicSectionRenderer: React.FC<RendererProps> = ({ sections, onOp
           case 'Hero':
             return <HeroSection key={idx} props={sec.props} onOpenQuote={onOpenQuote} />;
           case 'ServiceGrid':
-            return <ServiceGridSection key={idx} props={sec.props} onOpenQuote={onOpenQuote} />;
+            return (
+              <React.Fragment key={idx}>
+                <ServiceGridSection props={sec.props} onOpenQuote={onOpenQuote} />
+                <IntroSection />
+              </React.Fragment>
+            );
           case 'PricingPreview':
             return <PricingPreviewSection key={idx} props={sec.props} onOpenQuote={onOpenQuote} />;
           case 'BeforeAfter':
@@ -35,7 +49,14 @@ export const DynamicSectionRenderer: React.FC<RendererProps> = ({ sections, onOp
           case 'Trust':
             return <TrustSection key={idx} props={sec.props} />;
           case 'Process':
-            return <ProcessSection key={idx} props={sec.props} />;
+            return (
+              <React.Fragment key={idx}>
+                <ProcessSection props={sec.props} />
+                <EquipmentSection />
+                <VisualProofSection />
+                <ReviewsSection />
+              </React.Fragment>
+            );
           case 'ServiceAreas':
             return <ServiceAreasSection key={idx} props={sec.props} />;
           case 'FAQ':
