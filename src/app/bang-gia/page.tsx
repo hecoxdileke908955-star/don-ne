@@ -8,7 +8,7 @@ import { QuoteFormModal } from '@/components/QuoteFormModal';
 import { PricingCalculator } from '@/components/PricingCalculator';
 import { formatVND } from '@/lib/pricing-engine';
 
-const CATEGORIES = ['Tất cả', 'Nhà ở & Căn hộ', 'Doanh nghiệp & Xây dựng', 'Giặt ghế & Nội thất', 'Sàn & Kính', 'Dịch vụ chuyên sâu'];
+const ALL_CATEGORY = 'Tất cả';
 
 type PublicPriceItem = {
   id: string;
@@ -22,7 +22,7 @@ type PublicPriceItem = {
 };
 
 export default function PricingPage() {
-  const [selectedCat, setSelectedCat] = useState('Tất cả');
+  const [selectedCat, setSelectedCat] = useState(ALL_CATEGORY);
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [items, setItems] = useState<PublicPriceItem[]>([]);
   const [pricingUnavailable, setPricingUnavailable] = useState(false);
@@ -46,7 +46,10 @@ export default function PricingPage() {
       .catch(() => setPricingUnavailable(true));
   }, []);
 
-  const filteredItems = items.filter((item) => selectedCat === 'Tất cả' || item.cat === selectedCat);
+  // Category tabs are derived from the real categories present in the loaded
+  // items (not hard-coded), so the filter always matches actual PriceItem data.
+  const categories = [ALL_CATEGORY, ...Array.from(new Set(items.map((item) => item.cat)))];
+  const filteredItems = items.filter((item) => selectedCat === ALL_CATEGORY || item.cat === selectedCat);
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
@@ -62,7 +65,7 @@ export default function PricingPage() {
           <div className="mb-10"><PricingCalculator /></div>
 
           <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button key={cat} onClick={() => setSelectedCat(cat)} className={`whitespace-nowrap rounded-ctrl px-4 py-2 text-xs font-semibold transition ${selectedCat === cat ? 'bg-primary text-white shadow-sm' : 'bg-white text-text-muted border border-gray-200 hover:text-text-main'}`}>
                 {cat}
               </button>
@@ -76,6 +79,9 @@ export default function PricingPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {pricingUnavailable && <tr><td className="px-4 py-8 text-center text-text-muted" colSpan={5}>Bảng giá tạm thời chưa khả dụng.</td></tr>}
+                {!pricingUnavailable && filteredItems.length === 0 && (
+                  <tr><td className="px-4 py-8 text-center text-text-muted" colSpan={5}>Chưa có hạng mục giá nào trong danh mục &quot;{selectedCat}&quot;.</td></tr>
+                )}
                 {filteredItems.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50/70">
                     <td className="px-4 py-3.5"><div className="font-bold text-text-main">{item.name}</div><div className="text-[11px] text-text-muted mt-0.5">{item.note}</div></td>

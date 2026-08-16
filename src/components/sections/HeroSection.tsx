@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { SectionContentProps } from '@/lib/section-schema';
 
 interface HeroProps {
@@ -10,49 +11,68 @@ interface HeroProps {
 export const HeroSection: React.FC<HeroProps> = ({ props, onOpenQuote }) => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-primary-soft/40 via-surface to-surface py-16 md:py-24 border-b border-gray-100">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-bold text-primary mb-6">
-          <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-          {props.badgeText || 'DỊCH VỤ VỆ SINH CHUYÊN NGHIỆP HÀ NỘI'}
-        </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14">
+          {/* Text content: on top on mobile, left column on desktop */}
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-bold text-primary mb-6">
+              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              {props.badgeText || 'DỊCH VỤ VỆ SINH CHUYÊN NGHIỆP HÀ NỘI'}
+            </div>
 
-        <h1 className="text-3xl font-black tracking-tight text-text-main sm:text-5xl md:text-6xl max-w-4xl mx-auto leading-tight">
-          {props.heading || 'Không Gian Sống & Làm Việc'}{' '}
-          <span className="text-primary underline decoration-primary/30 decoration-4">
-            {props.highlightWord || 'Sạch Tinh Tươm'}
-          </span>
-        </h1>
+            <h1 className="text-3xl font-black tracking-tight text-text-main sm:text-5xl md:text-6xl max-w-4xl mx-auto lg:mx-0 leading-tight">
+              {props.heading || 'Không Gian Sống & Làm Việc'}{' '}
+              <span className="text-primary underline decoration-primary/30 decoration-4">
+                {props.highlightWord || 'Sạch Tinh Tươm'}
+              </span>
+            </h1>
 
-        <p className="mt-5 text-sm sm:text-base text-text-muted max-w-2xl mx-auto leading-relaxed">
-          {props.subheading || 'Dọn Nè cung cấp giải pháp tổng vệ sinh nhà ở, vệ sinh sau xây dựng, văn phòng và giặt đệm sofa. Nghiệm thu hài lòng 100% mới thanh toán.'}
-        </p>
+            <p className="mt-5 text-sm sm:text-base text-text-muted max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              {props.subheading || 'Dọn Nè cung cấp giải pháp tổng vệ sinh nhà ở, vệ sinh sau xây dựng, văn phòng và giặt đệm sofa. Nghiệm thu hài lòng 100% mới thanh toán.'}
+            </p>
 
-        {/* CTAs */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button
-            onClick={onOpenQuote}
-            className="w-full sm:w-auto rounded-ctrl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-primary-hover transition"
-          >
-            {props.primaryCtaText || 'Nhận Báo Giá 5 Phút'}
-          </button>
-          <Link
-            href="/bang-gia"
-            className="w-full sm:w-auto rounded-ctrl border border-gray-300 bg-white px-6 py-3.5 text-sm font-semibold text-text-main hover:bg-surface-secondary transition text-center"
-          >
-            {props.secondaryCtaText || 'Xem Bảng Giá 2026'}
-          </Link>
-        </div>
+            {/* CTAs */}
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+              <button
+                onClick={onOpenQuote}
+                className="w-full sm:w-auto rounded-ctrl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-primary-hover transition"
+              >
+                {props.primaryCtaText || 'Nhận Báo Giá 5 Phút'}
+              </button>
+              <Link
+                href="/bang-gia"
+                className="w-full sm:w-auto rounded-ctrl border border-gray-300 bg-white px-6 py-3.5 text-sm font-semibold text-text-main hover:bg-surface-secondary transition text-center"
+              >
+                {props.secondaryCtaText || 'Xem Bảng Giá 2026'}
+              </Link>
+            </div>
 
-        {/* Trust Bullets */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-xs text-text-main font-medium">
-          <div className="flex items-center justify-center gap-2 p-3 bg-white rounded-ctrl shadow-sm border border-gray-100">
-            <span className="text-primary font-bold">✓</span> Khảo sát & Báo giá minh bạch
+            {/* Trust Bullets */}
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto lg:mx-0 text-xs text-text-main font-medium">
+              <div className="flex items-center justify-center lg:justify-start gap-2 p-3 bg-white rounded-ctrl shadow-sm border border-gray-100">
+                <span className="text-primary font-bold">✓</span> Khảo sát & Báo giá minh bạch
+              </div>
+              <div className="flex items-center justify-center lg:justify-start gap-2 p-3 bg-white rounded-ctrl shadow-sm border border-gray-100">
+                <span className="text-primary font-bold">✓</span> Nhân thân nhân viên rõ ràng
+              </div>
+              <div className="flex items-center justify-center lg:justify-start gap-2 p-3 bg-white rounded-ctrl shadow-sm border border-gray-100">
+                <span className="text-primary font-bold">✓</span> Bảo hành hỗ trợ trong 24h
+              </div>
+            </div>
           </div>
-          <div className="flex items-center justify-center gap-2 p-3 bg-white rounded-ctrl shadow-sm border border-gray-100">
-            <span className="text-primary font-bold">✓</span> Nhân thân nhân viên rõ ràng
-          </div>
-          <div className="flex items-center justify-center gap-2 p-3 bg-white rounded-ctrl shadow-sm border border-gray-100">
-            <span className="text-primary font-bold">✓</span> Bảo hành hỗ trợ trong 24h
+
+          {/* Hero image: below text on mobile, right column on desktop */}
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl shadow-lg lg:mx-0 lg:aspect-square lg:max-w-none">
+            <Image
+              src="/images/home/dn-hero-01.jpeg"
+              alt="Nhân viên Dọn Nè thực hiện dịch vụ vệ sinh chuyên nghiệp"
+              fill
+              priority
+              fetchPriority="high"
+              quality={100}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+            />
           </div>
         </div>
       </div>
