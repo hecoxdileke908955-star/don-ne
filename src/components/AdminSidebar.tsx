@@ -19,6 +19,7 @@ interface NavItem {
 // drift from what those gates actually enforce.
 const NAV_ITEMS: NavItem[] = [
   { href: '/admin', label: 'Tổng quan Dashboard', minRole: 'EDITOR' },
+  { href: '/admin/website', label: 'Chỉnh sửa website', minRole: 'EDITOR' },
   { href: '/admin/pages', label: 'Trang nội dung', minRole: 'EDITOR' },
   { href: '/admin/leads', label: 'Quản lý Lead CRM', minRole: 'ADMIN' },
   { href: '/admin/pricing', label: 'Bảng giá', minRole: 'ADMIN' },
