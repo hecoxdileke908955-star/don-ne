@@ -41,7 +41,13 @@ export const Footer: React.FC = () => {
           {/* Brand column */}
           <div>
             <Link href="/" className="mb-4 inline-flex items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5">
-              <div className="relative h-8 w-8"><Image src="/logo-web.png" alt={config.brandName} fill className="object-contain" /></div>
+              {/* logo-mark.png: cropped house-icon-only derivative of
+                  logo-web.png (see Header.tsx for the full rationale) — the
+                  square h-8 w-8 box below made the same mistake the header
+                  had, forcing a wide 1.815:1 mark's already-shrunk visible
+                  content down further; sizing to the mark's own ratio fixes
+                  that the same way. */}
+              <div className="relative h-[33px] w-[60px]"><Image src="/logo-mark.png" alt={config.brandName} fill className="object-contain" /></div>
               <span className="text-lg font-black text-primary">{config.brandName}</span>
             </Link>
             <p className="mb-3 text-xs leading-relaxed text-white/70">{config.slogan}</p>
