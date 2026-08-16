@@ -1,12 +1,49 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { getImageProps } from 'next/image';
 import type { SectionContentProps } from '@/lib/section-schema';
 
 interface HeroProps {
   props: SectionContentProps;
   onOpenQuote?: () => void;
 }
+
+// lg breakpoint (Tailwind default: 1024px) — must match the `lg:` classes
+// used throughout this component's layout below.
+const DESKTOP_MEDIA_QUERY = '(min-width: 1024px)';
+
+// Art-direction pair via next/image's getImageProps(): a native <picture>
+// with a media-scoped <source> so the BROWSER — not CSS `hidden`/`lg:hidden`
+// — decides which single source to request. The previous implementation
+// rendered two <Image priority fetchPriority="high"> and hid one with CSS;
+// Next's automatic preload-link injection (and browser preload scanners
+// picking up two eager/high-priority <img> tags) fetched both sources on
+// every load regardless of viewport, doubling hero payload. <picture> is
+// parsed by the browser's own preload scanner, which only ever resolves and
+// requests the one <source>/<img> that matches — the standard fix.
+const {
+  props: { srcSet: mobileSrcSet, ...mobileImgProps },
+} = getImageProps({
+  src: '/images/home/dn-hero-01.jpeg',
+  alt: 'Nhân viên Dọn Nè thực hiện dịch vụ vệ sinh chuyên nghiệp',
+  width: 5504,
+  height: 3072,
+  quality: 100,
+  sizes: '100vw',
+  priority: true,
+});
+
+const {
+  props: { srcSet: desktopSrcSet },
+} = getImageProps({
+  src: '/images/home/dn-hero-desktop-poster.png',
+  alt: 'Poster dịch vụ vệ sinh chuyên nghiệp Dọn Nè: hotline, danh sách dịch vụ',
+  width: 1086,
+  height: 1448,
+  quality: 100,
+  sizes: '50vw',
+  priority: true,
+});
 
 // Round 4 Phase 3: reproduces the reference's large rounded colored-card
 // hero geometry (single dark block containing badge + H1 + subheading +
@@ -85,19 +122,34 @@ export const HeroSection: React.FC<HeroProps> = ({ props, onOpenQuote }) => {
                 reliably resolve against a flex/grid item sized only via
                 `stretch` in this Chromium build (confirmed via computed
                 style — height stayed at the image's intrinsic aspect ratio
-                instead of 100%); an in-flow <img> with h-full does. */}
+                instead of 100%); an in-flow <img> with h-full does.
+
+                Desktop-only poster swap: the poster (1086×1448, portrait
+                3:4) doesn't match this box's landscape/near-square shape at
+                lg+, so it renders with `object-contain` (never crops the
+                logo/hotline/service list) instead of `object-cover`. Mobile
+                and tablet keep the original landscape photo, which already
+                fits the aspect-[4/3] box correctly — swapping it for the
+                portrait poster there would either crop it or need a taller
+                box, which is a layout change this task doesn't call for.
+
+                Rendered as a native <picture>/<source media> pair (via
+                getImageProps()) instead of two CSS-hidden <Image priority>
+                elements — see the getImageProps() calls above for why. */}
             <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl shadow-lg lg:mx-0 lg:aspect-auto lg:max-w-none lg:flex-1">
-              <Image
-                src="/images/home/dn-hero-01.jpeg"
-                alt="Nhân viên Dọn Nè thực hiện dịch vụ vệ sinh chuyên nghiệp"
-                width={5504}
-                height={3072}
-                priority
-                fetchPriority="high"
-                quality={100}
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="h-full w-full object-cover"
-              />
+              <picture>
+                <source media={DESKTOP_MEDIA_QUERY} srcSet={desktopSrcSet} />
+                {/* object-fit is toggled by the same 1024px breakpoint as
+                    the <source media> above (cover for the mobile photo,
+                    contain for the desktop poster) — it doesn't need to
+                    "know" which resource the browser actually picked. */}
+                {/* eslint-disable-next-line jsx-a11y/alt-text -- alt IS present, spread in via mobileImgProps (from getImageProps()); the rule can't statically see through the spread */}
+                <img
+                  {...mobileImgProps}
+                  srcSet={mobileSrcSet}
+                  className="h-full w-full object-cover lg:object-contain"
+                />
+              </picture>
             </div>
           </div>
         </div>
